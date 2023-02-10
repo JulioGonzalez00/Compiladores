@@ -4,31 +4,16 @@
  */
 package GUI;
 
-import com.formdev.flatlaf.themes.FlatMacDarkLaf;
-import java.awt.Color;
-import java.awt.ComponentOrientation;
-import java.awt.Font;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Vector;
 import java.util.regex.Pattern;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
-import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
-import org.fife.ui.rtextarea.RTextScrollPane;
 
 /**
  *
@@ -36,16 +21,10 @@ import org.fife.ui.rtextarea.RTextScrollPane;
  */
 public class Principal extends javax.swing.JFrame {
 
-    private RSyntaxTextArea textArea;
-    private RTextScrollPane sp;
-    private String ruta;
-
-    FileReader fr = null;
-    BufferedReader br = null;
-    FileWriter fichero = null;
-    PrintWriter pw = null;
-
     private DefaultTreeModel tm;
+    String rutaC = null;
+
+    Vector<Archivo> archivos = new Vector();
 
     /**
      * Creates new form Principal
@@ -53,48 +32,30 @@ public class Principal extends javax.swing.JFrame {
     public Principal() {
         initComponents();
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
-        initPane();
         cargar_arbol();
     }
 
-    private void initPane() {
-        textArea = new RSyntaxTextArea();
-        textArea.setCodeFoldingEnabled(true);
-        textArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
-        sp = new RTextScrollPane();
-        this.Centro.add(sp);
-        jMenuSalir.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
-        DarkMode();
-    }
-
-    private void DarkMode() {
-        try {
-            UIManager.setLookAndFeel(new FlatMacDarkLaf());
-        } catch (UnsupportedLookAndFeelException ex) {
-            JOptionPane.showMessageDialog(null, "Error Kitsune:\n" + ex.getMessage());
-            System.exit(0);
-        }
-        textArea.setForeground(Color.white);
-        textArea.setBackground(new Color(55, 55, 55));
-        textArea.setFont(new Font("Dialog", Font.PLAIN, 17));
-        textArea.setCurrentLineHighlightColor(new Color(135, 80, 142));
-        sp = new RTextScrollPane(textArea);
-        this.Centro.add(sp);
-    }
-
     private void cargar_arbol() {
-        if (ruta == null) {
-            tm = new DefaultTreeModel(new DefaultMutableTreeNode("Ningun archivo abierto."));
+        if (rutaC == null) {
+            tm = new DefaultTreeModel(new DefaultMutableTreeNode("Ningun directorio abierto."));
             this.jTreeDirectorio.setModel(tm);
         } else {
             String separator = "\\";
-            String[] valores = ruta.split(Pattern.quote(separator));
+            String[] valores = rutaC.split(Pattern.quote(separator));
             DefaultMutableTreeNode nodo1 = new DefaultMutableTreeNode("Ruta");
             DefaultMutableTreeNode nodoi = nodo1;
             for (int i = 0; i < valores.length; i++) {
                 DefaultMutableTreeNode nodoaux = new DefaultMutableTreeNode(valores[i]);
                 nodoi.add(nodoaux);
                 nodoi = nodoaux;
+            }
+            File carpeta = new File(rutaC);
+            if(carpeta.exists()){
+                File[] files = carpeta.listFiles();
+                for (int i = 0; i < files.length; i++) {
+                    DefaultMutableTreeNode nodoaux = new DefaultMutableTreeNode(files[i].getName());
+                    nodoi.add(nodoaux);
+                }
             }
             this.jTreeDirectorio.setModel(new DefaultTreeModel(nodo1));
         }
@@ -113,6 +74,7 @@ public class Principal extends javax.swing.JFrame {
         Arriba = new javax.swing.JPanel();
         Herramientas = new javax.swing.JPanel();
         Centro = new javax.swing.JPanel();
+        jTabbedPaneCentro = new javax.swing.JTabbedPane();
         Abajo = new javax.swing.JPanel();
         jTabbedPaneAbajo = new javax.swing.JTabbedPane();
         jPanelResultados = new javax.swing.JPanel();
@@ -143,6 +105,8 @@ public class Principal extends javax.swing.JFrame {
         jMenuItemNuevo = new javax.swing.JMenuItem();
         jMenuItemAbrir = new javax.swing.JMenuItem();
         jMenuItemCerrar = new javax.swing.JMenuItem();
+        jMenuItemAbrirC = new javax.swing.JMenuItem();
+        jMenuItemCerrarC = new javax.swing.JMenuItem();
         jMenuItemGuardar = new javax.swing.JMenuItem();
         jMenuEditar = new javax.swing.JMenu();
         jMenuNavegar = new javax.swing.JMenu();
@@ -180,6 +144,8 @@ public class Principal extends javax.swing.JFrame {
 
         Centro.setOpaque(false);
         Centro.setLayout(new java.awt.BorderLayout());
+        Centro.add(jTabbedPaneCentro, java.awt.BorderLayout.CENTER);
+
         Lienzo.add(Centro, java.awt.BorderLayout.CENTER);
 
         Abajo.setMaximumSize(new java.awt.Dimension(32767, 160));
@@ -323,6 +289,24 @@ public class Principal extends javax.swing.JFrame {
         });
         jMenuArchivo.add(jMenuItemCerrar);
 
+        jMenuItemAbrirC.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Q, java.awt.event.InputEvent.SHIFT_DOWN_MASK | java.awt.event.InputEvent.CTRL_DOWN_MASK));
+        jMenuItemAbrirC.setText("Abrir Carpeta");
+        jMenuItemAbrirC.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemAbrirCActionPerformed(evt);
+            }
+        });
+        jMenuArchivo.add(jMenuItemAbrirC);
+
+        jMenuItemCerrarC.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.SHIFT_DOWN_MASK | java.awt.event.InputEvent.CTRL_DOWN_MASK));
+        jMenuItemCerrarC.setText("Cerrar Carpeta");
+        jMenuItemCerrarC.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemCerrarCActionPerformed(evt);
+            }
+        });
+        jMenuArchivo.add(jMenuItemCerrarC);
+
         jMenuItemGuardar.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.SHIFT_DOWN_MASK | java.awt.event.InputEvent.CTRL_DOWN_MASK));
         jMenuItemGuardar.setText("Guardar");
         jMenuItemGuardar.addActionListener(new java.awt.event.ActionListener() {
@@ -368,59 +352,48 @@ public class Principal extends javax.swing.JFrame {
         JFileChooser KFC = new JFileChooser();
         FileFilter filter = new FileNameExtensionFilter("TXT File", "txt");
         KFC.setFileFilter(filter);
-        KFC.showOpenDialog(this);
-        try {
-            File file = KFC.getSelectedFile();
-            fr = new FileReader(file);
-            br = new BufferedReader(fr);
-            this.textArea.setText("");
-            String linea;
-            while ((linea = br.readLine()) != null) {
-                this.textArea.append(linea + "\n");
-            }
-            ruta = file.getAbsolutePath();
-            cargar_arbol();
-        } catch (IOException ex) {
-            JOptionPane.showMessageDialog(this, "Error al abrir el archivo:\n" + ex.getMessage());
-            this.textArea.setText("");
-            try {
-                fr.close();
-            } catch (IOException ex2) {
-                System.err.println("Error: " + ex2.getMessage());
-            }
+        int respuesta = KFC.showOpenDialog(this);
+        if (respuesta == JFileChooser.APPROVE_OPTION) {
+            archivos.add(new Archivo(KFC.getSelectedFile()));
+            this.jTabbedPaneCentro.add(KFC.getSelectedFile().getName(), archivos.lastElement());
         }
     }//GEN-LAST:event_jMenuItemAbrirActionPerformed
 
     private void jMenuItemCerrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemCerrarActionPerformed
-        this.textArea.setText("");
         try {
-            ruta = null;
-            fr.close();
-            cargar_arbol();
-        } catch (IOException ex2) {
-            System.err.println("Error: " + ex2.getMessage());
+            int sel = this.jTabbedPaneCentro.getSelectedIndex();
+            this.jTabbedPaneCentro.remove(sel);
+            this.archivos.get(sel).cerrar();
+            this.archivos.remove(sel);
+        } catch (Exception ex) {
+            System.err.println("Error: " + ex.getMessage());
         }
     }//GEN-LAST:event_jMenuItemCerrarActionPerformed
 
     private void jMenuItemGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemGuardarActionPerformed
         try {
-            fichero = new FileWriter(ruta);
-            pw = new PrintWriter(fichero);
-            String text = textArea.getText();
-            pw.print(text);
-            JOptionPane.showMessageDialog(this,"Documento guardado.");
-        } catch (IOException ex) {
+            int sel = this.jTabbedPaneCentro.getSelectedIndex();
+            this.archivos.get(sel).guardar();
+        } catch (Exception ex) {
             System.err.println("Error: " + ex.getMessage());
-        } finally {
-            try {
-                if (null != fichero) {
-                    fichero.close();
-                }
-            } catch (IOException e2) {
-                System.err.println("Error: " + e2.getMessage());
-            }
         }
     }//GEN-LAST:event_jMenuItemGuardarActionPerformed
+
+    private void jMenuItemAbrirCActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemAbrirCActionPerformed
+        JFileChooser KFC = new JFileChooser();
+        KFC.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        int respuesta = KFC.showOpenDialog(this);
+        if (respuesta == JFileChooser.APPROVE_OPTION) {
+            rutaC=KFC.getSelectedFile().getPath();
+            this.cargar_arbol();
+            JOptionPane.showMessageDialog(this, "Carpeta abierta.");
+        }
+    }//GEN-LAST:event_jMenuItemAbrirCActionPerformed
+
+    private void jMenuItemCerrarCActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemCerrarCActionPerformed
+        rutaC = null;
+        cargar_arbol();
+    }//GEN-LAST:event_jMenuItemCerrarCActionPerformed
 
     /**
      * @param args the command line arguments
@@ -486,7 +459,9 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JMenu jMenuCorrer;
     private javax.swing.JMenu jMenuEditar;
     private javax.swing.JMenuItem jMenuItemAbrir;
+    private javax.swing.JMenuItem jMenuItemAbrirC;
     private javax.swing.JMenuItem jMenuItemCerrar;
+    private javax.swing.JMenuItem jMenuItemCerrarC;
     private javax.swing.JMenuItem jMenuItemGuardar;
     private javax.swing.JMenuItem jMenuItemNuevo;
     private javax.swing.JMenu jMenuNavegar;
@@ -505,6 +480,7 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPaneSemantico;
     private javax.swing.JScrollPane jScrollPaneSintactico;
     private javax.swing.JTabbedPane jTabbedPaneAbajo;
+    private javax.swing.JTabbedPane jTabbedPaneCentro;
     private javax.swing.JTabbedPane jTabbedPaneDerecha;
     private javax.swing.JTree jTreeDirectorio;
     // End of variables declaration//GEN-END:variables
