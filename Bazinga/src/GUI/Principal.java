@@ -4,6 +4,8 @@
  */
 package GUI;
 
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.Vector;
 import java.util.regex.Pattern;
@@ -14,6 +16,7 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
 
 /**
  *
@@ -31,8 +34,41 @@ public class Principal extends javax.swing.JFrame {
      */
     public Principal() {
         initComponents();
+        this.setTitle("Bazinga!");
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
         cargar_arbol();
+        initPanes();
+    }
+
+    private void initPanes() {
+        this.jTreeDirectorio.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2) {
+                    DefaultMutableTreeNode node = (DefaultMutableTreeNode) jTreeDirectorio.getLastSelectedPathComponent();
+                    if (node != null) {
+                        if (node.getChildCount() == 0) {
+                            String ruta = "";
+                            TreeNode[] path = node.getPath();
+                            for (int i = 1; i < path.length; i++) {
+                                if (i < path.length - 1) {
+                                    ruta += path[i].toString() + "\\";
+                                } else {
+                                    ruta += path[i].toString();
+                                }
+                            }
+                            try {
+                                File archivo = new File(ruta);
+                                archivos.add(new Archivo(archivo));
+                                jTabbedPaneCentro.add(archivo.getName(), archivos.lastElement());
+                            } catch (Exception ex) {
+                                System.err.println("Error: " + ex.getMessage());
+                            }
+                        }
+                    }
+                }
+            }
+        });
     }
 
     private void cargar_arbol() {
@@ -44,17 +80,20 @@ public class Principal extends javax.swing.JFrame {
             String[] valores = rutaC.split(Pattern.quote(separator));
             DefaultMutableTreeNode nodo1 = new DefaultMutableTreeNode("Ruta");
             DefaultMutableTreeNode nodoi = nodo1;
-            for (int i = 0; i < valores.length; i++) {
-                DefaultMutableTreeNode nodoaux = new DefaultMutableTreeNode(valores[i]);
+            for (String valor : valores) {
+                DefaultMutableTreeNode nodoaux = new DefaultMutableTreeNode(valor);
                 nodoi.add(nodoaux);
                 nodoi = nodoaux;
             }
             File carpeta = new File(rutaC);
-            if(carpeta.exists()){
+            if (carpeta.exists()) {
                 File[] files = carpeta.listFiles();
-                for (int i = 0; i < files.length; i++) {
-                    DefaultMutableTreeNode nodoaux = new DefaultMutableTreeNode(files[i].getName());
-                    nodoi.add(nodoaux);
+                for (File file : files) {
+                    String ext = file.getName().substring(file.getName().lastIndexOf('.') + 1);
+                    if (ext.matches("txt")) {
+                        DefaultMutableTreeNode nodoaux = new DefaultMutableTreeNode(file.getName());
+                        nodoi.add(nodoaux);
+                    }
                 }
             }
             this.jTreeDirectorio.setModel(new DefaultTreeModel(nodo1));
@@ -109,14 +148,13 @@ public class Principal extends javax.swing.JFrame {
         jMenuItemCerrarC = new javax.swing.JMenuItem();
         jMenuItemGuardar = new javax.swing.JMenuItem();
         jMenuEditar = new javax.swing.JMenu();
+        jMenuItemFind = new javax.swing.JMenuItem();
         jMenuNavegar = new javax.swing.JMenu();
         jMenuCompilar = new javax.swing.JMenu();
         jMenuCorrer = new javax.swing.JMenu();
-        jMenuSalir = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(800, 500));
-        setUndecorated(true);
 
         Lienzo.setLayout(new java.awt.BorderLayout());
 
@@ -269,6 +307,11 @@ public class Principal extends javax.swing.JFrame {
 
         jMenuItemNuevo.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, java.awt.event.InputEvent.SHIFT_DOWN_MASK | java.awt.event.InputEvent.CTRL_DOWN_MASK));
         jMenuItemNuevo.setText("Nuevo");
+        jMenuItemNuevo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemNuevoActionPerformed(evt);
+            }
+        });
         jMenuArchivo.add(jMenuItemNuevo);
 
         jMenuItemAbrir.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A, java.awt.event.InputEvent.SHIFT_DOWN_MASK | java.awt.event.InputEvent.CTRL_DOWN_MASK));
@@ -319,6 +362,16 @@ public class Principal extends javax.swing.JFrame {
         MenuBar.add(jMenuArchivo);
 
         jMenuEditar.setText("Editar");
+
+        jMenuItemFind.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F, java.awt.event.InputEvent.SHIFT_DOWN_MASK | java.awt.event.InputEvent.CTRL_DOWN_MASK));
+        jMenuItemFind.setText("Buscar");
+        jMenuItemFind.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemFindActionPerformed(evt);
+            }
+        });
+        jMenuEditar.add(jMenuItemFind);
+
         MenuBar.add(jMenuEditar);
 
         jMenuNavegar.setText("Navegar");
@@ -331,31 +384,31 @@ public class Principal extends javax.swing.JFrame {
         jMenuCorrer.setText("Correr");
         MenuBar.add(jMenuCorrer);
 
-        jMenuSalir.setText("Salir");
-        jMenuSalir.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jMenuSalirMouseClicked(evt);
-            }
-        });
-        MenuBar.add(jMenuSalir);
-
         setJMenuBar(MenuBar);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void jMenuSalirMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenuSalirMouseClicked
-        System.exit(0);
-    }//GEN-LAST:event_jMenuSalirMouseClicked
 
     private void jMenuItemAbrirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemAbrirActionPerformed
         JFileChooser KFC = new JFileChooser();
         FileFilter filter = new FileNameExtensionFilter("TXT File", "txt");
         KFC.setFileFilter(filter);
         int respuesta = KFC.showOpenDialog(this);
+        int band = -1;
         if (respuesta == JFileChooser.APPROVE_OPTION) {
-            archivos.add(new Archivo(KFC.getSelectedFile()));
-            this.jTabbedPaneCentro.add(KFC.getSelectedFile().getName(), archivos.lastElement());
+            File file = KFC.getSelectedFile();
+            String nombre = file.getName();
+            for (int i = 0; i < archivos.size(); i++) {
+                if (archivos.get(i).getName().matches(nombre)) {
+                    band = i;
+                }
+            }
+            if (band == -1) {
+                archivos.add(new Archivo(file));
+                this.jTabbedPaneCentro.add(KFC.getSelectedFile().getName(), archivos.lastElement());
+            } else {
+                jTabbedPaneCentro.setSelectedComponent(archivos.get(band));
+            }
         }
     }//GEN-LAST:event_jMenuItemAbrirActionPerformed
 
@@ -373,7 +426,10 @@ public class Principal extends javax.swing.JFrame {
     private void jMenuItemGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemGuardarActionPerformed
         try {
             int sel = this.jTabbedPaneCentro.getSelectedIndex();
-            this.archivos.get(sel).guardar();
+            String nombre = this.archivos.get(sel).guardar();
+            if (nombre != null) {
+                this.jTabbedPaneCentro.setTitleAt(sel, nombre);
+            }
         } catch (Exception ex) {
             System.err.println("Error: " + ex.getMessage());
         }
@@ -384,7 +440,7 @@ public class Principal extends javax.swing.JFrame {
         KFC.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         int respuesta = KFC.showOpenDialog(this);
         if (respuesta == JFileChooser.APPROVE_OPTION) {
-            rutaC=KFC.getSelectedFile().getPath();
+            rutaC = KFC.getSelectedFile().getPath();
             this.cargar_arbol();
             JOptionPane.showMessageDialog(this, "Carpeta abierta.");
         }
@@ -394,6 +450,20 @@ public class Principal extends javax.swing.JFrame {
         rutaC = null;
         cargar_arbol();
     }//GEN-LAST:event_jMenuItemCerrarCActionPerformed
+
+    private void jMenuItemFindActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemFindActionPerformed
+        try {
+            int sel = this.jTabbedPaneCentro.getSelectedIndex();
+            this.archivos.get(sel).buscar();
+        } catch (Exception ex) {
+            System.err.println("Error: " + ex.getMessage());
+        }
+    }//GEN-LAST:event_jMenuItemFindActionPerformed
+
+    private void jMenuItemNuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemNuevoActionPerformed
+        archivos.add(new Archivo());
+        this.jTabbedPaneCentro.add("Nuevo archivo*", archivos.lastElement());
+    }//GEN-LAST:event_jMenuItemNuevoActionPerformed
 
     /**
      * @param args the command line arguments
@@ -462,10 +532,10 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItemAbrirC;
     private javax.swing.JMenuItem jMenuItemCerrar;
     private javax.swing.JMenuItem jMenuItemCerrarC;
+    private javax.swing.JMenuItem jMenuItemFind;
     private javax.swing.JMenuItem jMenuItemGuardar;
     private javax.swing.JMenuItem jMenuItemNuevo;
     private javax.swing.JMenu jMenuNavegar;
-    private javax.swing.JMenu jMenuSalir;
     private javax.swing.JPanel jPanelErrores;
     private javax.swing.JPanel jPanelIntermedio;
     private javax.swing.JPanel jPanelLexico;

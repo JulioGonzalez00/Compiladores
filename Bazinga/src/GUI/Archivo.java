@@ -4,29 +4,50 @@
  */
 package GUI;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+import javax.swing.JToolBar;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rtextarea.RTextScrollPane;
+import org.fife.ui.rtextarea.SearchContext;
+import org.fife.ui.rtextarea.SearchEngine;
 
 /**
  *
  * @author julio
  */
-public class Archivo extends javax.swing.JPanel {
+public class Archivo extends javax.swing.JPanel implements ActionListener {
 
     //variables para la zona el texto.
     private RSyntaxTextArea textArea;
     private RTextScrollPane sp;
+    private JTextField searchField;
+    private JTextField replaceField;
+    private JCheckBox regexCB;
+    private JCheckBox matchCaseCB;
+    JToolBar toolBar;
+
+    
+    private String name = "Nuevo archivo";
     private String ruta;
+    private boolean finding = false;
 
     //Variables para abrir y escribir archivos
     FileReader fr = null;
@@ -34,13 +55,21 @@ public class Archivo extends javax.swing.JPanel {
     FileWriter fichero = null;
     PrintWriter pw = null;
 
+    public Archivo() {
+        initComponents();
+        initPane();
+        ruta = null;
+    }
+
     /**
      * Creates new form Archivo
+     *
      * @param file
      */
     public Archivo(File file) {
         initComponents();
         initPane();
+        name = file.getName();
         abrir(file);
     }
 
@@ -55,8 +84,47 @@ public class Archivo extends javax.swing.JPanel {
         textArea.setCurrentLineHighlightColor(new Color(135, 80, 142));
         sp = new RTextScrollPane(textArea);
         this.add(sp);
+        initFind();
     }
 
+    private void initFind() {
+        toolBar = new JToolBar();
+        searchField = new JTextField(30);
+        TextPrompt placeholder = new TextPrompt("Buscar", searchField);
+        placeholder.changeAlpha(0.75f);
+        placeholder.changeStyle(Font.ITALIC);
+        toolBar.add(searchField);
+        replaceField = new JTextField(30);
+
+        TextPrompt placeholder2 = new TextPrompt("Remplazar", replaceField);
+        placeholder2.changeAlpha(0.75f);
+        placeholder2.changeStyle(Font.ITALIC);
+        toolBar.add(replaceField);
+        final JButton nextButton = new JButton("Buscar siguiente.");
+        nextButton.setActionCommand("FindNext");
+        nextButton.addActionListener(this);
+        toolBar.add(nextButton);
+        searchField.addActionListener((ActionEvent e) -> {
+            nextButton.doClick(0);
+        });
+        JButton prevButton = new JButton("Buscar Anterior");
+        prevButton.setActionCommand("FindPrev");
+        prevButton.addActionListener(this);
+        toolBar.add(prevButton);
+        final JButton replaceButton = new JButton("Remplazar");
+        replaceButton.setActionCommand("Replace");
+        replaceButton.addActionListener(this);
+        toolBar.add(replaceButton);
+        regexCB = new JCheckBox("Regex");
+        toolBar.add(regexCB);
+        matchCaseCB = new JCheckBox("Match Case");
+        toolBar.add(matchCaseCB);
+    }
+
+    public String getName(){
+        return name;
+    }
+    
     public void cerrar() {
         this.textArea.setText("");
         try {
@@ -88,8 +156,20 @@ public class Archivo extends javax.swing.JPanel {
         }
     }
 
-    public void guardar() {
+    public String guardar() {
+        String nombre = null;
         try {
+            if (ruta == null) {
+                JFileChooser KFC = new JFileChooser();
+                FileFilter filter = new FileNameExtensionFilter("TXT File", "txt");
+                KFC.setFileFilter(filter);
+                int ok = KFC.showSaveDialog(this);
+                if (ok == JFileChooser.APPROVE_OPTION) {
+                    File file = KFC.getSelectedFile();
+                    ruta = file.getPath() + ".txt";
+                    nombre = file.getName() + ".txt";
+                }
+            }
             fichero = new FileWriter(ruta);
             pw = new PrintWriter(fichero);
             String text = textArea.getText();
@@ -106,6 +186,61 @@ public class Archivo extends javax.swing.JPanel {
                 System.err.println("Error: " + e2.getMessage());
             }
         }
+        return nombre;
+    }
+
+    public void buscar() {
+        finding = !finding;
+        if (finding) {
+            this.add(toolBar, BorderLayout.SOUTH);
+            this.validate();
+        } else {
+            this.remove(toolBar);
+            this.validate();
+        }
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        Boolean forward = null;
+        switch (e.getActionCommand()) {
+            case "FindNext":
+                forward = true;
+                break;
+            case "FindPrev":
+                forward = false;
+                break;
+            case "Replace":
+                forward = null;
+                break;
+        }
+        SearchContext context = new SearchContext();
+        String text = searchField.getText();
+        String text2 = replaceField.getText();
+        if (text.length() == 0) {
+            return;
+        }
+        context.setSearchFor(text);
+        context.setMatchCase(matchCaseCB.isSelected());
+        context.setRegularExpression(regexCB.isSelected());
+        context.setWholeWord(false);
+        if (forward != null) {
+            context.setSearchForward(forward);
+            boolean found = SearchEngine.find(textArea, context).wasFound();
+            if (!found) {
+                JOptionPane.showMessageDialog(this, "Text not found");
+            }
+        } else {
+            if (text2.length() == 0) {
+                return;
+            }
+            context.setReplaceWith(text2);
+            boolean found = SearchEngine.replace(textArea, context).wasFound();
+            if (!found) {
+                JOptionPane.showMessageDialog(this, "Text not found");
+            }
+        }
+
     }
 
     /**
@@ -119,8 +254,6 @@ public class Archivo extends javax.swing.JPanel {
 
         setLayout(new java.awt.BorderLayout());
     }// </editor-fold>//GEN-END:initComponents
-
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
 }
