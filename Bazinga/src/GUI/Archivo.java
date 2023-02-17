@@ -44,7 +44,6 @@ public class Archivo extends javax.swing.JPanel implements ActionListener {
     private JCheckBox matchCaseCB;
     JToolBar toolBar;
 
-    
     private String name = "Nuevo archivo";
     private String ruta;
     private boolean finding = false;
@@ -76,7 +75,7 @@ public class Archivo extends javax.swing.JPanel implements ActionListener {
     private void initPane() {
         textArea = new RSyntaxTextArea();
         textArea.setCodeFoldingEnabled(true);
-        textArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
+        textArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_C);
         sp = new RTextScrollPane();
         textArea.setForeground(Color.white);
         textArea.setBackground(new Color(55, 55, 55));
@@ -121,10 +120,10 @@ public class Archivo extends javax.swing.JPanel implements ActionListener {
         toolBar.add(matchCaseCB);
     }
 
-    public String getName(){
+    public String getName() {
         return name;
     }
-    
+
     public void cerrar() {
         this.textArea.setText("");
         try {
@@ -166,8 +165,13 @@ public class Archivo extends javax.swing.JPanel implements ActionListener {
                 int ok = KFC.showSaveDialog(this);
                 if (ok == JFileChooser.APPROVE_OPTION) {
                     File file = KFC.getSelectedFile();
-                    ruta = file.getPath() + ".txt";
-                    nombre = file.getName() + ".txt";
+                    if (file.getName().endsWith(".txt")) {
+                        ruta = file.getPath();
+                        nombre = file.getName();
+                    }else {
+                        ruta = file.getPath() + ".txt";
+                        nombre = file.getName() + ".txt";
+                    }
                 }
             }
             fichero = new FileWriter(ruta);
@@ -241,6 +245,10 @@ public class Archivo extends javax.swing.JPanel implements ActionListener {
             }
         }
 
+    }
+
+    public String getRuta() {
+        return this.ruta;
     }
 
     /**

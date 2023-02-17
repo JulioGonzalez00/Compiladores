@@ -100,16 +100,33 @@
             <Property name="text" type="java.lang.String" value="Navegar"/>
             <Property name="horizontalAlignment" type="int" value="0"/>
           </Properties>
+          <SubComponents>
+            <MenuItem class="javax.swing.JMenuItem" name="jMenuItemArchivo">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Ir al archivo..."/>
+              </Properties>
+            </MenuItem>
+          </SubComponents>
         </Menu>
         <Menu class="javax.swing.JMenu" name="jMenuCompilar">
           <Properties>
             <Property name="text" type="java.lang.String" value="Compilar"/>
           </Properties>
-        </Menu>
-        <Menu class="javax.swing.JMenu" name="jMenuCorrer">
-          <Properties>
-            <Property name="text" type="java.lang.String" value="Correr"/>
-          </Properties>
+          <SubComponents>
+            <MenuItem class="javax.swing.JMenuItem" name="jMenuItemCorrer">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Correr"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItemCorrerActionPerformed"/>
+              </Events>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="jMenuItemCompilar">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Compilar"/>
+              </Properties>
+            </MenuItem>
+          </SubComponents>
         </Menu>
       </SubComponents>
     </Menu>

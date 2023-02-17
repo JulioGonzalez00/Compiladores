@@ -7,8 +7,13 @@ package GUI;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
+import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -17,6 +22,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
+import procesos.Compilador;
 
 /**
  *
@@ -28,6 +34,7 @@ public class Principal extends javax.swing.JFrame {
     String rutaC = null;
 
     Vector<Archivo> archivos = new Vector();
+    private static final ImageIcon icon = new ImageIcon(Principal.class.getResource("/icon/Icono.png"));
 
     /**
      * Creates new form Principal
@@ -35,12 +42,14 @@ public class Principal extends javax.swing.JFrame {
     public Principal() {
         initComponents();
         this.setTitle("Bazinga!");
+        this.setIconImage(icon.getImage());
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
         cargar_arbol();
         initPanes();
     }
 
     private void initPanes() {
+        Herramientas.setVisible(false);
         this.jTreeDirectorio.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -150,8 +159,10 @@ public class Principal extends javax.swing.JFrame {
         jMenuEditar = new javax.swing.JMenu();
         jMenuItemFind = new javax.swing.JMenuItem();
         jMenuNavegar = new javax.swing.JMenu();
+        jMenuItemArchivo = new javax.swing.JMenuItem();
         jMenuCompilar = new javax.swing.JMenu();
-        jMenuCorrer = new javax.swing.JMenu();
+        jMenuItemCorrer = new javax.swing.JMenuItem();
+        jMenuItemCompilar = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(800, 500));
@@ -376,13 +387,26 @@ public class Principal extends javax.swing.JFrame {
 
         jMenuNavegar.setText("Navegar");
         jMenuNavegar.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+
+        jMenuItemArchivo.setText("Ir al archivo...");
+        jMenuNavegar.add(jMenuItemArchivo);
+
         MenuBar.add(jMenuNavegar);
 
         jMenuCompilar.setText("Compilar");
-        MenuBar.add(jMenuCompilar);
 
-        jMenuCorrer.setText("Correr");
-        MenuBar.add(jMenuCorrer);
+        jMenuItemCorrer.setText("Correr");
+        jMenuItemCorrer.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemCorrerActionPerformed(evt);
+            }
+        });
+        jMenuCompilar.add(jMenuItemCorrer);
+
+        jMenuItemCompilar.setText("Compilar");
+        jMenuCompilar.add(jMenuItemCompilar);
+
+        MenuBar.add(jMenuCompilar);
 
         setJMenuBar(MenuBar);
 
@@ -465,6 +489,11 @@ public class Principal extends javax.swing.JFrame {
         this.jTabbedPaneCentro.add("Nuevo archivo*", archivos.lastElement());
     }//GEN-LAST:event_jMenuItemNuevoActionPerformed
 
+    private void jMenuItemCorrerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemCorrerActionPerformed
+        int sel = this.jTabbedPaneCentro.getSelectedIndex();
+        Compilador comp = new Compilador(this.archivos.get(sel).getRuta(),this);
+    }//GEN-LAST:event_jMenuItemCorrerActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -526,12 +555,14 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JList<String> jListSintactico;
     private javax.swing.JMenu jMenuArchivo;
     private javax.swing.JMenu jMenuCompilar;
-    private javax.swing.JMenu jMenuCorrer;
     private javax.swing.JMenu jMenuEditar;
     private javax.swing.JMenuItem jMenuItemAbrir;
     private javax.swing.JMenuItem jMenuItemAbrirC;
+    private javax.swing.JMenuItem jMenuItemArchivo;
     private javax.swing.JMenuItem jMenuItemCerrar;
     private javax.swing.JMenuItem jMenuItemCerrarC;
+    private javax.swing.JMenuItem jMenuItemCompilar;
+    private javax.swing.JMenuItem jMenuItemCorrer;
     private javax.swing.JMenuItem jMenuItemFind;
     private javax.swing.JMenuItem jMenuItemGuardar;
     private javax.swing.JMenuItem jMenuItemNuevo;
