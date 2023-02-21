@@ -30,6 +30,7 @@ public class Principal extends javax.swing.JFrame {
 
     Vector<Archivo> archivos = new Vector();
     private final ImageIcon icon = new ImageIcon(getClass().getResource("/recursos/icon/Icono.png"));
+    private final ImageIcon tabIcon = new ImageIcon(getClass().getResource("/recursos/iconos/tabIcon.png"));
 
     /**
      * Creates new form Principal
@@ -104,10 +105,10 @@ public class Principal extends javax.swing.JFrame {
         }
     }
 
-    public void setActive(int index){
+    public void setActive(int index) {
         this.jTabbedPaneCentro.setSelectedIndex(index);
     }
-    
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -316,7 +317,7 @@ public class Principal extends javax.swing.JFrame {
         jMenuArchivo.setText("Archivo");
 
         jMenuItemNuevo.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, java.awt.event.InputEvent.SHIFT_DOWN_MASK | java.awt.event.InputEvent.CTRL_DOWN_MASK));
-        jMenuItemNuevo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/recursos/iconos/openfile.png"))); // NOI18N
+        jMenuItemNuevo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/recursos/iconos/new_file.png"))); // NOI18N
         jMenuItemNuevo.setText("Nuevo");
         jMenuItemNuevo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -326,6 +327,7 @@ public class Principal extends javax.swing.JFrame {
         jMenuArchivo.add(jMenuItemNuevo);
 
         jMenuItemAbrir.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A, java.awt.event.InputEvent.SHIFT_DOWN_MASK | java.awt.event.InputEvent.CTRL_DOWN_MASK));
+        jMenuItemAbrir.setIcon(new javax.swing.ImageIcon(getClass().getResource("/recursos/iconos/tabIcon.png"))); // NOI18N
         jMenuItemAbrir.setText("Abrir");
         jMenuItemAbrir.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -344,6 +346,7 @@ public class Principal extends javax.swing.JFrame {
         jMenuArchivo.add(jMenuItemCerrar);
 
         jMenuItemAbrirC.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Q, java.awt.event.InputEvent.SHIFT_DOWN_MASK | java.awt.event.InputEvent.CTRL_DOWN_MASK));
+        jMenuItemAbrirC.setIcon(new javax.swing.ImageIcon(getClass().getResource("/recursos/iconos/open_Folder.png"))); // NOI18N
         jMenuItemAbrirC.setText("Abrir Carpeta");
         jMenuItemAbrirC.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -439,8 +442,8 @@ public class Principal extends javax.swing.JFrame {
             }
             if (band == -1) {
                 archivos.add(new Archivo(file));
-                this.jTabbedPaneCentro.add(KFC.getSelectedFile().getName(), archivos.lastElement());
-                this.setActive(archivos.size()-1);
+                this.jTabbedPaneCentro.addTab(KFC.getSelectedFile().getName(), tabIcon, archivos.lastElement());
+                this.setActive(archivos.size() - 1);
             } else {
                 jTabbedPaneCentro.setSelectedComponent(archivos.get(band));
             }
@@ -510,7 +513,7 @@ public class Principal extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItemCompilarActionPerformed
 
     private void jMenuItemArchivoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemArchivoActionPerformed
-        DialogoIrArchivo arch = new DialogoIrArchivo(this,archivos);
+        DialogoIrArchivo arch = new DialogoIrArchivo(this, archivos);
     }//GEN-LAST:event_jMenuItemArchivoActionPerformed
 
     /**
