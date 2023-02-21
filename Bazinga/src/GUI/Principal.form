@@ -14,6 +14,9 @@
                 <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
                   <KeyStroke key="Shift+Ctrl+N"/>
                 </Property>
+                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/recursos/iconos/openfile.png"/>
+                </Property>
                 <Property name="text" type="java.lang.String" value="Nuevo"/>
               </Properties>
               <Events>
@@ -105,6 +108,9 @@
               <Properties>
                 <Property name="text" type="java.lang.String" value="Ir al archivo..."/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItemArchivoActionPerformed"/>
+              </Events>
             </MenuItem>
           </SubComponents>
         </Menu>
@@ -125,6 +131,9 @@
               <Properties>
                 <Property name="text" type="java.lang.String" value="Compilar"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItemCompilarActionPerformed"/>
+              </Events>
             </MenuItem>
           </SubComponents>
         </Menu>

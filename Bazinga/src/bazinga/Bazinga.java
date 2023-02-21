@@ -22,13 +22,14 @@ public class Bazinga {
     public static void main(String[] args) {
         try {
             UIManager.setLookAndFeel(new FlatMacDarkLaf());
+
+            Principal p = new Principal();
+            p.setLocationRelativeTo(null);
+            p.setVisible(true);
         } catch (UnsupportedLookAndFeelException ex) {
-            JOptionPane.showMessageDialog(null,"Error Kitsune:\n"+ex.getMessage());
+            JOptionPane.showMessageDialog(null, "Error Kitsune:\n" + ex.getMessage());
             System.exit(0);
         }
-        Principal p = new Principal();
-        p.setLocationRelativeTo(null);
-        p.setVisible(true);
     }
 
 }

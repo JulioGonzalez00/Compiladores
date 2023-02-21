@@ -7,11 +7,7 @@ package GUI;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Vector;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
@@ -22,7 +18,6 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
-import procesos.Compilador;
 
 /**
  *
@@ -34,7 +29,7 @@ public class Principal extends javax.swing.JFrame {
     String rutaC = null;
 
     Vector<Archivo> archivos = new Vector();
-    private static final ImageIcon icon = new ImageIcon(Principal.class.getResource("/icon/Icono.png"));
+    private final ImageIcon icon = new ImageIcon(getClass().getResource("/recursos/icon/Icono.png"));
 
     /**
      * Creates new form Principal
@@ -109,6 +104,10 @@ public class Principal extends javax.swing.JFrame {
         }
     }
 
+    public void setActive(int index){
+        this.jTabbedPaneCentro.setSelectedIndex(index);
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -317,6 +316,7 @@ public class Principal extends javax.swing.JFrame {
         jMenuArchivo.setText("Archivo");
 
         jMenuItemNuevo.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, java.awt.event.InputEvent.SHIFT_DOWN_MASK | java.awt.event.InputEvent.CTRL_DOWN_MASK));
+        jMenuItemNuevo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/recursos/iconos/openfile.png"))); // NOI18N
         jMenuItemNuevo.setText("Nuevo");
         jMenuItemNuevo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -389,6 +389,11 @@ public class Principal extends javax.swing.JFrame {
         jMenuNavegar.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 
         jMenuItemArchivo.setText("Ir al archivo...");
+        jMenuItemArchivo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemArchivoActionPerformed(evt);
+            }
+        });
         jMenuNavegar.add(jMenuItemArchivo);
 
         MenuBar.add(jMenuNavegar);
@@ -404,6 +409,11 @@ public class Principal extends javax.swing.JFrame {
         jMenuCompilar.add(jMenuItemCorrer);
 
         jMenuItemCompilar.setText("Compilar");
+        jMenuItemCompilar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemCompilarActionPerformed(evt);
+            }
+        });
         jMenuCompilar.add(jMenuItemCompilar);
 
         MenuBar.add(jMenuCompilar);
@@ -430,6 +440,7 @@ public class Principal extends javax.swing.JFrame {
             if (band == -1) {
                 archivos.add(new Archivo(file));
                 this.jTabbedPaneCentro.add(KFC.getSelectedFile().getName(), archivos.lastElement());
+                this.setActive(archivos.size()-1);
             } else {
                 jTabbedPaneCentro.setSelectedComponent(archivos.get(band));
             }
@@ -491,8 +502,16 @@ public class Principal extends javax.swing.JFrame {
 
     private void jMenuItemCorrerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemCorrerActionPerformed
         int sel = this.jTabbedPaneCentro.getSelectedIndex();
-        Compilador comp = new Compilador(this.archivos.get(sel).getRuta(),this);
+        //Compilador comp = new Compilador(this.archivos.get(sel).getRuta(),this);
     }//GEN-LAST:event_jMenuItemCorrerActionPerformed
+
+    private void jMenuItemCompilarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemCompilarActionPerformed
+
+    }//GEN-LAST:event_jMenuItemCompilarActionPerformed
+
+    private void jMenuItemArchivoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemArchivoActionPerformed
+        DialogoIrArchivo arch = new DialogoIrArchivo(this,archivos);
+    }//GEN-LAST:event_jMenuItemArchivoActionPerformed
 
     /**
      * @param args the command line arguments

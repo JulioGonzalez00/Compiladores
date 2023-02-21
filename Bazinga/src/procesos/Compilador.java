@@ -5,6 +5,7 @@
 package procesos;
 
 import GUI.Principal;
+import java.io.IOException;
 
 /**
  *
@@ -20,6 +21,11 @@ public class Compilador {
     }
 
     private void Compilar(String ruta) {
-
+        try {
+            //Aqui se hara el llamado al compilador
+            Process p = Runtime.getRuntime().exec("Ruta del compilador");
+        } catch (IOException ex) {
+            System.err.println("Error: " + ex.getLocalizedMessage());
+        }
     }
 }
