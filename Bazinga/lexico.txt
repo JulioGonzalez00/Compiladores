@@ -1,5 +1,5 @@
 int hola
-float flotante = 1.8
+float flotante = 21..8789
 char caracter
 while(hola == 1){
 	echo("Hola")

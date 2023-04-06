@@ -25,31 +25,33 @@ abstract public class AnalizadorLexico {
         String ruta = "C:/Users/julio/Desktop/Compiladores/Compiladores/Bazinga/src/Compilador/Lexer.flex";
         iniciar(ruta);
     }
-    
-    public static void iniciar(String ruta){
+
+    public static void iniciar(String ruta) {
         File archivo = new File(ruta);
         JFlex.Main.generate(archivo);
     }
+
     public static void analizar(final String cadena, final JList lista, final JList listaError) {
         try {
             File archivo = new File("lexico.txt");
-            try (PrintWriter escribir = new PrintWriter(archivo)) {
+            try ( PrintWriter escribir = new PrintWriter(archivo)) {
                 escribir.print(cadena);
             }
             try {
                 Reader lector = new BufferedReader(new FileReader("lexico.txt"));
                 Lexer lexer = new Lexer(lector);
                 ArrayList<String> resultado = new ArrayList();
+                ArrayList<String> error = new ArrayList();
                 while (true) {
                     Tokens token = lexer.yylex();
                     if (token == null) {
                         resultado.add("Fin");
                         break;
-                    }   
+                    }
                     switch (token) {
                         case ERROR ->
-                            resultado.add(lexer.lexeme + " el simbolo analizado no existe.");
-                        case Identificador, Numero, Reservadas ->
+                            error.add("Token inesperado: " + lexer.lexeme);
+                        case Identificador, Numero, PalabraReservada,Flotante,Texto,CaracterEspecial ->
                             resultado.add(lexer.lexeme + ": es un " + token + ".");
                         default ->
                             resultado.add("Token encontrado: " + token);
@@ -60,6 +62,11 @@ abstract public class AnalizadorLexico {
                     model.addElement(string);
                 }
                 lista.setModel(model);
+                model = new DefaultListModel();
+                for (String string : error) {
+                    model.addElement(string);
+                }
+                listaError.setModel(model);
             } catch (FileNotFoundException ex) {
                 System.err.println("Error en : " + ex.getMessage());
             } catch (IOException ex) {

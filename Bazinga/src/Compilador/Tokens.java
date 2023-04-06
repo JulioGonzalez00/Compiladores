@@ -9,7 +9,7 @@ package Compilador;
  * @author julio
  */
 public enum Tokens {
-    Reservadas,
+    PalabraReservada,
     Igual,
     Suma,
     Resta,
@@ -17,6 +17,14 @@ public enum Tokens {
     Division,
     Identificador,
     Numero,
+    Flotante,
     IgualIgual,
+    MenorIgual,
+    MenorQue,
+    MayorQue,
+    MayorIgual,
+    Diferente,
+    CaracterEspecial,
+    Texto,
     ERROR
 }
