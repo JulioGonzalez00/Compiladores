@@ -4,6 +4,7 @@
  */
 package GUI;
 
+import Compilador.AnalizadorLexico;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -121,8 +122,6 @@ public class Principal extends javax.swing.JFrame {
         Lienzo = new javax.swing.JPanel();
         Arriba = new javax.swing.JPanel();
         Herramientas = new javax.swing.JPanel();
-        Centro = new javax.swing.JPanel();
-        jTabbedPaneCentro = new javax.swing.JTabbedPane();
         Abajo = new javax.swing.JPanel();
         jTabbedPaneAbajo = new javax.swing.JTabbedPane();
         jPanelResultados = new javax.swing.JPanel();
@@ -145,9 +144,12 @@ public class Principal extends javax.swing.JFrame {
         jPanelIntermedio = new javax.swing.JPanel();
         jScrollPaneIntermedio = new javax.swing.JScrollPane();
         jListIntermedio = new javax.swing.JList<>();
+        jSplitPaneCentro = new javax.swing.JSplitPane();
         Izquierda = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTreeDirectorio = new javax.swing.JTree();
+        Centro = new javax.swing.JPanel();
+        jTabbedPaneCentro = new javax.swing.JTabbedPane();
         MenuBar = new javax.swing.JMenuBar();
         jMenuArchivo = new javax.swing.JMenu();
         jMenuItemNuevo = new javax.swing.JMenuItem();
@@ -163,6 +165,7 @@ public class Principal extends javax.swing.JFrame {
         jMenuCompilar = new javax.swing.JMenu();
         jMenuItemCorrer = new javax.swing.JMenuItem();
         jMenuItemCompilar = new javax.swing.JMenuItem();
+        jMenuItemLexico = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(800, 500));
@@ -190,12 +193,6 @@ public class Principal extends javax.swing.JFrame {
         Arriba.add(Herramientas, java.awt.BorderLayout.CENTER);
 
         Lienzo.add(Arriba, java.awt.BorderLayout.PAGE_START);
-
-        Centro.setOpaque(false);
-        Centro.setLayout(new java.awt.BorderLayout());
-        Centro.add(jTabbedPaneCentro, java.awt.BorderLayout.CENTER);
-
-        Lienzo.add(Centro, java.awt.BorderLayout.CENTER);
 
         Abajo.setMaximumSize(new java.awt.Dimension(32767, 160));
         Abajo.setMinimumSize(new java.awt.Dimension(0, 160));
@@ -294,8 +291,6 @@ public class Principal extends javax.swing.JFrame {
 
         Lienzo.add(Derecha, java.awt.BorderLayout.LINE_END);
 
-        Izquierda.setMinimumSize(new java.awt.Dimension(150, 450));
-        Izquierda.setPreferredSize(new java.awt.Dimension(150, 450));
         Izquierda.setLayout(new java.awt.BorderLayout());
 
         javax.swing.tree.DefaultMutableTreeNode treeNode1 = new javax.swing.tree.DefaultMutableTreeNode("root");
@@ -310,7 +305,14 @@ public class Principal extends javax.swing.JFrame {
 
         Izquierda.add(jScrollPane1, java.awt.BorderLayout.CENTER);
 
-        Lienzo.add(Izquierda, java.awt.BorderLayout.LINE_START);
+        jSplitPaneCentro.setLeftComponent(Izquierda);
+
+        Centro.setLayout(new java.awt.BorderLayout());
+        Centro.add(jTabbedPaneCentro, java.awt.BorderLayout.CENTER);
+
+        jSplitPaneCentro.setRightComponent(Centro);
+
+        Lienzo.add(jSplitPaneCentro, java.awt.BorderLayout.CENTER);
 
         getContentPane().add(Lienzo, java.awt.BorderLayout.CENTER);
 
@@ -419,6 +421,14 @@ public class Principal extends javax.swing.JFrame {
         });
         jMenuCompilar.add(jMenuItemCompilar);
 
+        jMenuItemLexico.setText("Analizar Lexico");
+        jMenuItemLexico.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemLexicoActionPerformed(evt);
+            }
+        });
+        jMenuCompilar.add(jMenuItemLexico);
+
         MenuBar.add(jMenuCompilar);
 
         setJMenuBar(MenuBar);
@@ -500,7 +510,7 @@ public class Principal extends javax.swing.JFrame {
 
     private void jMenuItemNuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemNuevoActionPerformed
         archivos.add(new Archivo());
-        this.jTabbedPaneCentro.add("Nuevo archivo*", archivos.lastElement());
+        this.jTabbedPaneCentro.addTab("Nuevo archivo*", tabIcon, archivos.lastElement());
     }//GEN-LAST:event_jMenuItemNuevoActionPerformed
 
     private void jMenuItemCorrerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemCorrerActionPerformed
@@ -515,6 +525,11 @@ public class Principal extends javax.swing.JFrame {
     private void jMenuItemArchivoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemArchivoActionPerformed
         DialogoIrArchivo arch = new DialogoIrArchivo(this, archivos);
     }//GEN-LAST:event_jMenuItemArchivoActionPerformed
+
+    private void jMenuItemLexicoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemLexicoActionPerformed
+        int sel = jTabbedPaneCentro.getSelectedIndex();
+        AnalizadorLexico.analizar(this.archivos.get(sel).getText(), jListLexico, jListErrores);
+    }//GEN-LAST:event_jMenuItemLexicoActionPerformed
 
     /**
      * @param args the command line arguments
@@ -587,6 +602,7 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItemCorrer;
     private javax.swing.JMenuItem jMenuItemFind;
     private javax.swing.JMenuItem jMenuItemGuardar;
+    private javax.swing.JMenuItem jMenuItemLexico;
     private javax.swing.JMenuItem jMenuItemNuevo;
     private javax.swing.JMenu jMenuNavegar;
     private javax.swing.JPanel jPanelErrores;
@@ -602,6 +618,7 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPaneResultados;
     private javax.swing.JScrollPane jScrollPaneSemantico;
     private javax.swing.JScrollPane jScrollPaneSintactico;
+    private javax.swing.JSplitPane jSplitPaneCentro;
     private javax.swing.JTabbedPane jTabbedPaneAbajo;
     private javax.swing.JTabbedPane jTabbedPaneCentro;
     private javax.swing.JTabbedPane jTabbedPaneDerecha;

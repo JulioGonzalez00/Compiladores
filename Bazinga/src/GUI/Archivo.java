@@ -75,7 +75,7 @@ public class Archivo extends javax.swing.JPanel implements ActionListener {
     private void initPane() {
         textArea = new RSyntaxTextArea();
         textArea.setCodeFoldingEnabled(true);
-        textArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_C);
+        textArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
         sp = new RTextScrollPane();
         textArea.setForeground(Color.white);
         textArea.setBackground(new Color(55, 55, 55));
@@ -168,7 +168,7 @@ public class Archivo extends javax.swing.JPanel implements ActionListener {
                     if (file.getName().endsWith(".txt")) {
                         ruta = file.getPath();
                         nombre = file.getName();
-                    }else {
+                    } else {
                         ruta = file.getPath() + ".txt";
                         nombre = file.getName() + ".txt";
                     }
@@ -249,6 +249,10 @@ public class Archivo extends javax.swing.JPanel implements ActionListener {
 
     public String getRuta() {
         return this.ruta;
+    }
+
+    public String getText() {
+        return textArea.getText();
     }
 
     /**

@@ -1,0 +1,6 @@
+int hola
+float flotante = 1.8
+char caracter
+while(hola == 1){
+	echo("Hola")
+}
