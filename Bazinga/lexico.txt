@@ -1,6 +1,6 @@
-int hola
-float flotante = 21..8789
-char caracter
-while(hola == 1){
-	echo("Hola")
+int i = 1;
+float j = 3.4;
+public main(int a,b){
+	
 }
+:

@@ -4,6 +4,11 @@
  */
 package Compilador;
 
+import static Compilador.Tokens.CaracterEspecial;
+import static Compilador.Tokens.Flotante;
+import static Compilador.Tokens.Numero;
+import static Compilador.Tokens.PalabraReservada;
+import static Compilador.Tokens.Texto;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -22,13 +27,50 @@ import javax.swing.JList;
 abstract public class AnalizadorLexico {
 
     public static void main(String[] args) {
-        String ruta = "C:/Users/julio/Desktop/Compiladores/Compiladores/Bazinga/src/Compilador/Lexer.flex";
-        iniciar(ruta);
+        //String ruta = "C:/Users/julio/Desktop/Compiladores/Compiladores/Bazinga/src/Compilador/Lexer.flex";
+        //iniciar(ruta);
+        System.out.println(args[0]);
+        analizar(args[0]);
     }
 
     public static void iniciar(String ruta) {
         File archivo = new File(ruta);
         JFlex.Main.generate(archivo);
+    }
+
+    public static void analizar(final String file) {
+        File archivo = new File(file);
+        try {
+            Reader lector = new BufferedReader(new FileReader("lexico.txt"));
+            Lexer lexer = new Lexer(lector);
+            ArrayList<String> resultado = new ArrayList();
+            ArrayList<String> error = new ArrayList();
+            while (true) {
+                Tokens token = lexer.yylex();
+                if (token == null) {
+                    resultado.add("Fin");
+                    break;
+                }
+                switch (token) {
+                    case ERROR ->
+                        error.add("Token inesperado: " + lexer.lexeme);
+                    case Identificador, Numero, PalabraReservada,Flotante,Texto,CaracterEspecial ->
+                        resultado.add(lexer.lexeme + ": es un " + token + ".");
+                    default ->
+                        resultado.add("Token encontrado: " + token);
+                }
+            }
+            for (String string : resultado) {
+                System.out.println(string);
+            }
+            for (String string : error) {
+                System.err.println(string);
+            }
+        } catch (FileNotFoundException ex) {
+            System.err.println("Error en : " + ex.getMessage());
+        } catch (IOException ex) {
+            System.err.println("Error en : " + ex.getMessage());
+        }
     }
 
     public static void analizar(final String cadena, final JList lista, final JList listaError) {
