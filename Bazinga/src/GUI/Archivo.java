@@ -23,8 +23,9 @@ import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import org.fife.ui.rsyntaxtextarea.AbstractTokenMakerFactory;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
-import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
+import org.fife.ui.rsyntaxtextarea.TokenMakerFactory;
 import org.fife.ui.rtextarea.RTextScrollPane;
 import org.fife.ui.rtextarea.SearchContext;
 import org.fife.ui.rtextarea.SearchEngine;
@@ -75,7 +76,14 @@ public class Archivo extends javax.swing.JPanel implements ActionListener {
     private void initPane() {
         textArea = new RSyntaxTextArea();
         textArea.setCodeFoldingEnabled(true);
-        textArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
+        //textArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
+        try {
+            AbstractTokenMakerFactory atmf = (AbstractTokenMakerFactory) TokenMakerFactory.getDefaultInstance();
+            atmf.putMapping("text/sCooper","compilador.LexerColor");
+            textArea.setSyntaxEditingStyle("text/sCooper");
+        } catch (Exception ex) {
+            System.err.println("Error: " + ex.getMessage());
+        }
         sp = new RTextScrollPane();
         textArea.setForeground(Color.white);
         textArea.setBackground(new Color(55, 55, 55));

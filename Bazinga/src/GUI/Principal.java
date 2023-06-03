@@ -4,7 +4,7 @@
  */
 package GUI;
 
-import Compilador.AnalizadorLexico;
+import compilador.MainClass;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -133,8 +133,8 @@ public class Principal extends javax.swing.JFrame {
         Derecha = new javax.swing.JPanel();
         jTabbedPaneDerecha = new javax.swing.JTabbedPane();
         jPanelLexico = new javax.swing.JPanel();
-        jScrollPaneLexico = new javax.swing.JScrollPane();
-        jListLexico = new javax.swing.JList<>();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jTableLexica = new javax.swing.JTable();
         jPanelSintactico = new javax.swing.JPanel();
         jScrollPaneSintactico = new javax.swing.JScrollPane();
         jListSintactico = new javax.swing.JList<>();
@@ -165,7 +165,6 @@ public class Principal extends javax.swing.JFrame {
         jMenuCompilar = new javax.swing.JMenu();
         jMenuItemCorrer = new javax.swing.JMenuItem();
         jMenuItemCompilar = new javax.swing.JMenuItem();
-        jMenuItemLexico = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(800, 500));
@@ -220,6 +219,7 @@ public class Principal extends javax.swing.JFrame {
             public int getSize() { return strings.length; }
             public String getElementAt(int i) { return strings[i]; }
         });
+        jListErrores.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         jScrollPaneErrores.setViewportView(jListErrores);
 
         jPanelErrores.add(jScrollPaneErrores, java.awt.BorderLayout.CENTER);
@@ -237,14 +237,20 @@ public class Principal extends javax.swing.JFrame {
 
         jPanelLexico.setLayout(new java.awt.BorderLayout());
 
-        jListLexico.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Lexico 1", "Lexico 2" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
-        jScrollPaneLexico.setViewportView(jListLexico);
+        jTableLexica.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null}
+            },
+            new String [] {
+                "Lexema", "Tipo", "Posicion"
+            }
+        ));
+        jScrollPane2.setViewportView(jTableLexica);
 
-        jPanelLexico.add(jScrollPaneLexico, java.awt.BorderLayout.CENTER);
+        jPanelLexico.add(jScrollPane2, java.awt.BorderLayout.CENTER);
 
         jTabbedPaneDerecha.addTab("Lexico", jPanelLexico);
 
@@ -421,14 +427,6 @@ public class Principal extends javax.swing.JFrame {
         });
         jMenuCompilar.add(jMenuItemCompilar);
 
-        jMenuItemLexico.setText("Analizar Lexico");
-        jMenuItemLexico.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemLexicoActionPerformed(evt);
-            }
-        });
-        jMenuCompilar.add(jMenuItemLexico);
-
         MenuBar.add(jMenuCompilar);
 
         setJMenuBar(MenuBar);
@@ -514,22 +512,18 @@ public class Principal extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItemNuevoActionPerformed
 
     private void jMenuItemCorrerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemCorrerActionPerformed
-        int sel = this.jTabbedPaneCentro.getSelectedIndex();
-        //Compilador comp = new Compilador(this.archivos.get(sel).getRuta(),this);
+
     }//GEN-LAST:event_jMenuItemCorrerActionPerformed
 
     private void jMenuItemCompilarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemCompilarActionPerformed
-
+        int sel = this.jTabbedPaneCentro.getSelectedIndex();
+        new MainClass().compile(this.archivos.get(sel).getText(),
+                jTableLexica,jListErrores);
     }//GEN-LAST:event_jMenuItemCompilarActionPerformed
 
     private void jMenuItemArchivoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemArchivoActionPerformed
         DialogoIrArchivo arch = new DialogoIrArchivo(this, archivos);
     }//GEN-LAST:event_jMenuItemArchivoActionPerformed
-
-    private void jMenuItemLexicoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemLexicoActionPerformed
-        int sel = jTabbedPaneCentro.getSelectedIndex();
-        AnalizadorLexico.analizar(this.archivos.get(sel).getText(), jListLexico, jListErrores);
-    }//GEN-LAST:event_jMenuItemLexicoActionPerformed
 
     /**
      * @param args the command line arguments
@@ -586,7 +580,6 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JMenuBar MenuBar;
     private javax.swing.JList<String> jListErrores;
     private javax.swing.JList<String> jListIntermedio;
-    private javax.swing.JList<String> jListLexico;
     private javax.swing.JList<String> jListResultados;
     private javax.swing.JList<String> jListSemantico;
     private javax.swing.JList<String> jListSintactico;
@@ -602,7 +595,6 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItemCorrer;
     private javax.swing.JMenuItem jMenuItemFind;
     private javax.swing.JMenuItem jMenuItemGuardar;
-    private javax.swing.JMenuItem jMenuItemLexico;
     private javax.swing.JMenuItem jMenuItemNuevo;
     private javax.swing.JMenu jMenuNavegar;
     private javax.swing.JPanel jPanelErrores;
@@ -612,9 +604,9 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JPanel jPanelSemantico;
     private javax.swing.JPanel jPanelSintactico;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPaneErrores;
     private javax.swing.JScrollPane jScrollPaneIntermedio;
-    private javax.swing.JScrollPane jScrollPaneLexico;
     private javax.swing.JScrollPane jScrollPaneResultados;
     private javax.swing.JScrollPane jScrollPaneSemantico;
     private javax.swing.JScrollPane jScrollPaneSintactico;
@@ -622,6 +614,7 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JTabbedPane jTabbedPaneAbajo;
     private javax.swing.JTabbedPane jTabbedPaneCentro;
     private javax.swing.JTabbedPane jTabbedPaneDerecha;
+    private javax.swing.JTable jTableLexica;
     private javax.swing.JTree jTreeDirectorio;
     // End of variables declaration//GEN-END:variables
 }

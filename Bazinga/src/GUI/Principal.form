@@ -141,14 +141,6 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItemCompilarActionPerformed"/>
               </Events>
             </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="jMenuItemLexico">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="Analizar Lexico"/>
-              </Properties>
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItemLexicoActionPerformed"/>
-              </Events>
-            </MenuItem>
           </SubComponents>
         </Menu>
       </SubComponents>
@@ -343,6 +335,7 @@
                                 <StringItem index="3" value=" "/>
                               </StringArray>
                             </Property>
+                            <Property name="selectionMode" type="int" value="0"/>
                           </Properties>
                           <AuxValues>
                             <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
@@ -396,7 +389,7 @@
 
                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
                   <SubComponents>
-                    <Container class="javax.swing.JScrollPane" name="jScrollPaneLexico">
+                    <Container class="javax.swing.JScrollPane" name="jScrollPane2">
                       <AuxValues>
                         <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
                       </AuxValues>
@@ -408,18 +401,16 @@
 
                       <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
                       <SubComponents>
-                        <Component class="javax.swing.JList" name="jListLexico">
+                        <Component class="javax.swing.JTable" name="jTableLexica">
                           <Properties>
-                            <Property name="model" type="javax.swing.ListModel" editor="org.netbeans.modules.form.editors2.ListModelEditor">
-                              <StringArray count="2">
-                                <StringItem index="0" value="Lexico 1"/>
-                                <StringItem index="1" value="Lexico 2"/>
-                              </StringArray>
+                            <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
+                              <Table columnCount="3" rowCount="4">
+                                <Column editable="true" title="Lexema" type="java.lang.Object"/>
+                                <Column editable="true" title="Tipo" type="java.lang.Object"/>
+                                <Column editable="true" title="Posicion" type="java.lang.Object"/>
+                              </Table>
                             </Property>
                           </Properties>
-                          <AuxValues>
-                            <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
-                          </AuxValues>
                         </Component>
                       </SubComponents>
                     </Container>
