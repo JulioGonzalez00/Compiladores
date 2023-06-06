@@ -518,7 +518,7 @@ public class Principal extends javax.swing.JFrame {
     private void jMenuItemCompilarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemCompilarActionPerformed
         int sel = this.jTabbedPaneCentro.getSelectedIndex();
         new MainClass().compile(this.archivos.get(sel).getText(),
-                jTableLexica,jListErrores);
+                jTableLexica, jListErrores, jListResultados);
     }//GEN-LAST:event_jMenuItemCompilarActionPerformed
 
     private void jMenuItemArchivoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemArchivoActionPerformed

@@ -47,9 +47,9 @@ public class MainClass {
         identificadores = new HashMap();
     }
 
-    public void compile(String codigo, JTable lexica, JList listaErrors) {
+    public void compile(String codigo, JTable lexica, JList listaErrors, JList Resultados) {
         lexicalAnalysis(codigo, lexica);
-        syntacticAnalysis(listaErrors);
+        syntacticAnalysis(listaErrors, Resultados);
         semanticAnalysis();
     }
 
@@ -90,147 +90,155 @@ public class MainClass {
         lexica.setModel(modelo);
     }
 
-    private void syntacticAnalysis(JList listaErrores) {
-        Grammar gramatica = new Grammar(tokens, errors);
+    private void syntacticAnalysis(JList listaErrores, JList Resultados) {
 
+        Grammar gramatica = new Grammar(tokens, errors);
+        gramatica.disableMessages();
         /*Eliminacion de los errores*/
         gramatica.delete(new String[]{"ERROR", "Error_numerico", "Error_identificador"});
 
-        /* Agrupacion de valores logicos */
-        gramatica.group("Logico", "(True | False)", true);
+        gramatica.group("Valor", "(Numero | Verdadero | Falso)");
+        gramatica.group("Valor", "Identificador Menos Identificador");
+        gramatica.group("Valor", "Identificador Suma Identificador");
+        gramatica.group("Valor", "Identificador Menos Valor");
+        gramatica.group("Valor", "Identificador Suma Valor");
+        gramatica.group("Valor", "Identificador Multiplicacion Valor");
+        gramatica.group("Valor", "Identificador Multiplicacion Identificador");
+        gramatica.group("Valor", "Identificador Division Valor");
+        gramatica.group("Valor", "Identificador Division Identificador");
 
-        /*Agrupacion de valores*/
-        gramatica.group("Valor", "(Numero | Logico)", true);
+        gramatica.group("Tipo_dato", "(Float | Int | Boolean)");
+        gramatica.group("Declaracion", "Tipo_dato Identificador (Coma Identificador)? Punto_y_coma");
 
-        /* Agrupacion de los tipos de dato */
-        gramatica.group("Tipo_dato", "(Float | Int | Boolean)", true);
+        gramatica.loopForFunExecUntilChangeNotDetected(() -> {
+            gramatica.group("Lista_decl", "Declaracion");
+            gramatica.group("Lista_decl", "Lista_decl Declaracion");
+            gramatica.group("Lista_decl", "Lista_decl Lista_decl");
+        });
 
-        /*Declaracion de variable*/
-        gramatica.group("Variable", "Tipo_dato Identificador Igual Valor", true);
-        gramatica.group("Variable", "Tipo_dato Igual Valor", true,
-                2, "Error sintactico {}: Falta el identificador en la variable [#, %]");
-        gramatica.group("Variable", "Tipo_dato Identificador Valor", true,
-                3, "Error sintactico {}: Falta el asignador en la variable [#, %]");
-        gramatica.group("Variable", "Identificador Igual Valor", true,
-                3, "Error sintactico {}: Falta el tipo de dato en la variable [#, %]");
+        gramatica.loopForFunExecUntilChangeNotDetected(() -> {
+            gramatica.group("Op_logico", "(IgualIgual | Mayor | Menor | MenorIgual | MayorIgual | Diferente)");
+            gramatica.group("Exp_logica", "Identificador Op_logico Valor");
+            gramatica.group("Exp_logica", "Identificador Op_logico Identificador");
+            gramatica.group("Exp_logica", "Exp_logica (And | Or) Exp_logica");
+        });
 
-        gramatica.finalLineColumn();
+        gramatica.loopForFunExecUntilChangeNotDetected(() -> {
+            //gramatica.group("Suma", "Identificador  (Suma | Resta) Valor");
+            gramatica.group("Sent_asig", "Identificador Igual Valor Punto_y_coma");
 
-        gramatica.group("Variable", "Tipo_dato Identificador Igual", true,
-                4, "Error sintactico {}: Falta el valor en la declaracion [#, %]");
+            gramatica.group("Sent_write", "Write Identificador Punto_y_coma");
+            gramatica.group("Sent_while", "While Abre_parentesis Exp_logica Cierra_parentesis Bloque");
+            gramatica.group("Sent_if", "If Abre_parentesis Exp_logica Cierra_parentesis Then Bloque (Else Bloque)? Fi");
+            gramatica.group("Sent_do", "Do Bloque Until Abre_parentesis Exp_logica Cierra_parentesis Punto_y_coma");
+            gramatica.group("Bloque", "Abre_llave (Lista_sent) Cierra_llave");
 
+            gramatica.group("Sentencia", "(Sent_write | Sent_asig | Sent_if | Sent_while | Sent_do)");
+
+            gramatica.group("Lista_sent", "Sentencia");
+            gramatica.group("Lista_sent", "Lista_sent Sentencia");
+            gramatica.group("Lista_sent", "Lista_sent Lista_sent");
+
+        });
+
+        gramatica.group("Program", "Program Abre_llave (Lista_decl)? (Lista_sent)? Cierra_llave");
+        int num = 0;
+        /* Declaracion de los errores */
         gramatica.initialLineColumn();
 
-        /* Eliminacion de tipos de datos y operadores de asignacion*/
-        gramatica.delete("Tipo_dato", 5,
-                "Error sintactico {}: El tipo de dato no esta en una dclaracion [#, %]");
-        gramatica.delete("Igual", 6,
-                "Error sintactico {}: El asignador no esta en una declaracion [#, %]");
-
-        /*Agrupar identificadores y parametros*/
-        gramatica.group("Valor", "Identificador", true);
-        gramatica.group("Parametros", "Valor (Coma Valor)+");
-
-        /*Agrupacion de funciones*/
-        gramatica.group("Palabra_reservada",
-                "(Program | Read | Write)", true);
-
-        gramatica.group("Funcion", "Palabra_reservada", true);
-        gramatica.group("Funcion_comp", "Funcion Abre_llave (Valor | Parametros)? Cierra_llave");
-        gramatica.group("Funcion_comp", "Funcion (Valor | Parametros)? Cierra_llave", 7,
-                "Error sintactico {}: Falta el parentensis que abre [#, %]");
+        gramatica.group("Program", "Program (Lista_decl)? (Lista_sent)? Cierra_llave", num++,
+                "Error sintactico {}: Falta la llave que abre[#, %]");
+        gramatica.group("Declaracion", "Identificador (Coma Identificador)? Punto_y_coma", num++,
+                "Error sintactico {}: Falta el tipo de dato [#, %}");
+        gramatica.group("Exp_logica", "Op_logico Identificador", num++,
+                "Error sintactico {}: Falta el primer valor de operacion [#, %]");
+        gramatica.group("Exp_logica", "(And | Or) Exp_logica", num++,
+                "Error sintactico {}: Falta la primer expresion logica a evaluar [#, %]");
+        gramatica.group("Sent_asig", "Igual Valor Punto_y_coma", num++,
+                "Error sintactico {}: Falta el identificador [#, %]");
+        gramatica.group("Sent_asig", "Identificador Valor Punto_y_coma", num++,
+                "Error sintactico {}: Falta el operador de asignacion [#, %]");
+        gramatica.group("Sent_asig", "Identificador Igual Punto_y_coma", num++,
+                "Error sintactico {}: Falta el valor [#, %]");
+        gramatica.group("Sent_while", "Abre_parentesis Exp_logica Cierra_parentesis Bloque", num++,
+                "Error sintactico {}: Falta la palabra reservada while [#, %]");
+        gramatica.group("Sent_while", "While Exp_logica Cierra_parentesis Bloque", num++,
+                "Error sintactico {}: Falta el parentesis que abre [#, %]");
+        gramatica.group("Sent_while", "While Abre_parentesis Cierra_parentesis Bloque", num++,
+                "Error sintactico {}: Falta la operacion logica [#, %]");
+        gramatica.group("Sent_while", "While Abre_parentesis Exp_logica Bloque", num++,
+                "Error sintactico {}: Falta el parentesis que cierra [#, %]");
+        gramatica.group("Sent_if", "Abre_parentesis Exp_logica Cierra_parentesis Then Bloque (Else Bloque)? Fi", num++,
+                "Error sintactico {}: Falta la palabra reservada if [#, %]");
+        gramatica.group("Sent_if", "If Exp_logica Cierra_parentesis Then Bloque (Else Bloque)? Fi", num++,
+                "Error sintactico {}: Falta el parentesis que abre [#, %]");
+        gramatica.group("Sent_if", "If Abre_parentesis Cierra_parentesis Then Bloque (Else Bloque)? Fi", num++,
+                "Error sintactico {}: Falta la expresion logica [#, %]");
+        gramatica.group("Sent_if", "If Abre_parentesis Exp_logica Then Bloque (Else Bloque)? Fi", num++,
+                "Error sintactico {}: Falta el parentesis que cierra [#, %]");
+        gramatica.group("Sent_if", "If Abre_parentesis Exp_logica Cierra_parentesis Bloque (Else Bloque)? Fi", num++,
+                "Error sintactico {}: Falta la palabra reservada then [#, %]");
+        gramatica.group("Sent_if", "If Abre_parentesis Exp_logica Cierra_parentesis Then (Else Bloque)? Fi", num++,
+                "Error sintactico {}: Falta el bloque a ejecutar [#, %]");
+        gramatica.group("Sent_if", "If Abre_parentesis Exp_logica Cierra_parentesis Then Bloque (Bloque)? Fi", num++,
+                "Error sintactico {}: Falta la palabra reservada Else [#, %]");
+        gramatica.group("Sent_if", "If Abre_parentesis Exp_logica Cierra_parentesis Then Bloque (Else )? Fi", num++,
+                "Error sintactico {}: Falta el bloque a ejecutar en el else [#, %]");
+        gramatica.group("Sent_do", "Bloque Until Abre_parentesis Exp_logica Cierra_parentesis Punto_y_coma", num++,
+                "Error sintactico {}: Falta la palabra reservada do [#, %]");
+        gramatica.group("Sent_do", "Do Until Abre_parentesis Exp_logica Cierra_parentesis Punto_y_coma", num++,
+                "Error sintactico {}: Falta el bloque a ejecutar [#, %]");
+        gramatica.group("Sent_do", "Do Bloque Abre_parentesis Exp_logica Cierra_parentesis Punto_y_coma", num++,
+                "Error sintactico {}: Falta la palabra reservada until [#, %]");
+        gramatica.group("Sent_do", "Do Bloque Until Exp_logica Cierra_parentesis Punto_y_coma", num++,
+                "Error sintactico {}: Falta el parentesis que abre [#, %]");
+        gramatica.group("Sent_do", "Do Bloque Until Abre_parentesis Cierra_parentesis Punto_y_coma", num++,
+                "Error sintactico {}: Falta la expresion logica [#, %]");
+        gramatica.group("Sent_do", "Do Bloque Until Abre_parentesis Exp_logica Punto_y_coma", num++,
+                "Error sintactico {}: Falta el parentesis que cierra [#, %]");
+        gramatica.group("Bloque", "(Lista_sent) Cierra_llave", num++,
+                "Error sintactico {}: Falta el parentesis que abre [#, %]");
+        gramatica.group("Bloque", "Abre_llave Cierra_llave", num++,
+                "Error sintactico {}: Falta el bloque de ejecucion [#, %]");
 
         gramatica.finalLineColumn();
 
-        gramatica.group("Funcion_comp", "Funcion Abre_parentesis (Valor | Parametros)", 8,
+        gramatica.group("Program", "Program Abre_llave (Lista_decl)? (Lista_sent)? ", num++,
+                "Error sintactico {}: Falta la llave que cierra [#, %]");
+        gramatica.group("Declaracion", "Tipo_dato Identificador (Coma Identificador)?", num++,
+                "Error sintactico {}: Falta el punto y coma [#, %}");
+        gramatica.group("Exp_logica", "Identificador Op_logico ", num++,
+                "Error sintactico {}: Falta el segundo valor de operacion [#, %]");
+        gramatica.group("Exp_logica", "Exp_logica (And | Or)", num++,
+                "Error sintactico {}: Falta la segunda expresion logica a evaluar [#, %]");
+        gramatica.group("Sent_asig", "Identificador Igual Valor", num++,
+                "Error sintactico {}: Falta el punto y coma [#, %]");
+        gramatica.group("Sent_while", "While Abre_parentesis Exp_logica Cierra_parentesis", num++,
+                "Error sintactico {}: Falta el bloque a ejecutar[#, %]");
+        gramatica.group("Sent_if", "If Abre_parentesis Exp_logica Cierra_parentesis Then Bloque (Else Bloque)?", num++,
+                "Error sintactico {}: Falta la palabra reservada fi[#, %]");
+        gramatica.group("Sent_do", "Do Bloque Until Abre_parentesis Exp_logica Cierra_parentesis", num++,
+                "Error sintactico {}: Falta el punto y coma [#, %]");   
+        gramatica.group("Bloque", "Abre_llave (Lista_sent)", num++,
                 "Error sintactico {}: Falta el parentesis que cierra [#, %]");
 
-        gramatica.initialLineColumn();
-
-        /* Eliminacion de funciones incompletas*/
-        gramatica.delete("Funcion", 9,
-                "Error sintactico {}: La funcion no se declaro de manera adecuada");
-
-        /* Operadores logicos */
-        gramatica.group("Operador_logico",
-                "(Menor | Mayor | MenorIgual | MayorIgual | IgualIgual | Diferente)", true);
-
-        gramatica.loopForFunExecUntilChangeNotDetected(() -> {
-            gramatica.group("Expresion_logica", "(Funcion_comp | Expresion_logica) (Operador_logico (Expresion_logica | Funcion_comp))+");
-            gramatica.group("Expresion_logica", "Abre_parentesis Expresion_logica Cierra_parentesis");
-        });
-
-        /* Eliminacion de operadores logicos incompletos */
-        gramatica.delete("Operador_logico", 10, "Error sintactico {}: El operador logico no esta en ninguna expresion.");
-
-        /* Agrupacion de expreciones logicas como valor y parametros */
-        gramatica.group("Valor", "Expresion_logica");
-        gramatica.group("Parametros", "Valor (Coma Valor)+");
-
-        /* Sentencias */
-        gramatica.group("Sentencia", "(Variable_pc | Funcion_comp_pc)");
-
-        /* Agrupacion de estructuras de control */
-        gramatica.group("Estructura_control", "(While | If | Done | Else | Until | Then)");
-        gramatica.group("Estructura_control", "Estructura_control Abre_llave Cierra_llave");
-        gramatica.group("Estructura_control_comp", "Estructura_control Abre_llave (Sentencia)? Cierra_llave");
-        gramatica.group("Estructura_control_comp", "Estructura_control Abre_parentesis (Valor | Parametros) Cierra_parentesis");
-        gramatica.group("Estructura_control_comp", "Estructura_control Abre_parentesis (Valor | Parametros) Cierra_parentesis Estructura_control");
-
-        /* Eliminacion de estructuras de control incompletas */
-        gramatica.delete("Estructura_control", 11, "Error sintactico {}: La estructura no se declaro correctamente [#, %]");
-
-        /* Eliminacion de parentesis */
-        gramatica.delete(new String[]{"Abre_parentesis", "Cierra_parentesis"}, 12,
-                "Error sintactico {}: El parentesis [] no esta contenido en una agrupacion [#, %] ");
-
-        gramatica.finalLineColumn();
-
-        /* Verificacion de punto y coma al final de una sentencia */
-        //Identificadores de variables
-        gramatica.group("Variable_PC", "Variable Punto_y_coma");
-        gramatica.group("Variable_PC", "Variable", true, 13,
-                "Error sintactico {}: Falta el punto y coma al final del avariable [#, %]");
-
-        //Funciones
-        gramatica.group("Funcion_comp_pc", "Funcion_comp Punto_y_coma");
-
-        gramatica.initialLineColumn();
-
-        /* Eliminacion del punto y coma */
-        gramatica.delete("Punto_y_coma", 14, "Error sintactico {}: El punto y coma no esta al final de una sentencia [#, %]");
-
-        gramatica.loopForFunExecUntilChangeNotDetected(() -> {
-            gramatica.group("Estructura_control_comp_LASLC", "Estructura_control_comp Abre_llave (Sentencia)? Cierra_llave", true);
-            gramatica.group("Sentencia", "(Sentencia | Estructura_control_comp_LASLC)+");
-        });
-
-        /* Estructuras de control incompletas */
-        gramatica.loopForFunExecUntilChangeNotDetected(() -> {
-            gramatica.initialLineColumn();
-            gramatica.group("Estructura_control_comp_LASLC", "Estructura_control_completa (Sentencia)? Cierra_llave", true,
-                    15, "Error sintactico {}: Falta la llave que abre la estructura de control [#, %]");
-            gramatica.finalLineColumn();
-            gramatica.group("Estructura_control_comp_LASLC", "Estructura_control_completa Abre_llave (Sentencia)", true,
-                    16, "Error sintactico {}: Falta la llave que cierra la estructura de control [#, %]");
-            gramatica.group("Sentencia", "(Sentencia | Estructura_control_comp_LASLC)");
-        });
-
-        gramatica.delete(new String[]{"Abre_llave", "Cierra_llave"}, 17,
-                "Error sintactico {}: La llave [] no esta contenido en una agrupacion [#, %]");
-
+        //gramatica.show();
         DefaultListModel<String> lista = new DefaultListModel<>();
+        DefaultListModel<String> listaR = new DefaultListModel<>();
         int sizeErrors = errors.size();
         if (sizeErrors > 0) {
+            listaR.addElement("Compilacion abortada.");
+            listaR.addElement("Revisar panel de errores.");
             Functions.sortErrorsByLineAndColumn(errors);
             for (ErrorLSSL error : errors) {
                 lista.addElement(String.valueOf(error));
             }
         } else {
-
+            listaR.addElement("Analisis sintactico terminado.");
+            listaR.addElement("El codigo es valido.");
         }
         listaErrores.setModel(lista);
-        System.out.println("Hola");
+        Resultados.setModel(listaR);
     }
 
     private void semanticAnalysis() {
