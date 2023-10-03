@@ -136,8 +136,8 @@ public class Principal extends javax.swing.JFrame {
         jScrollPane2 = new javax.swing.JScrollPane();
         jTableLexica = new javax.swing.JTable();
         jPanelSintactico = new javax.swing.JPanel();
-        jScrollPaneSintactico = new javax.swing.JScrollPane();
-        jListSintactico = new javax.swing.JList<>();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        textAreaSintactica = new javax.swing.JTextArea();
         jPanelSemantico = new javax.swing.JPanel();
         jScrollPaneSemantico = new javax.swing.JScrollPane();
         jListSemantico = new javax.swing.JList<>();
@@ -256,14 +256,11 @@ public class Principal extends javax.swing.JFrame {
 
         jPanelSintactico.setLayout(new java.awt.BorderLayout());
 
-        jListSintactico.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Sintactico 1", "Sintactico 2", "Sintactico 3" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
-        jScrollPaneSintactico.setViewportView(jListSintactico);
+        textAreaSintactica.setColumns(20);
+        textAreaSintactica.setRows(5);
+        jScrollPane3.setViewportView(textAreaSintactica);
 
-        jPanelSintactico.add(jScrollPaneSintactico, java.awt.BorderLayout.CENTER);
+        jPanelSintactico.add(jScrollPane3, java.awt.BorderLayout.CENTER);
 
         jTabbedPaneDerecha.addTab("Sintactico", jPanelSintactico);
 
@@ -460,10 +457,12 @@ public class Principal extends javax.swing.JFrame {
 
     private void jMenuItemCerrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemCerrarActionPerformed
         try {
-            int sel = this.jTabbedPaneCentro.getSelectedIndex();
-            this.jTabbedPaneCentro.remove(sel);
-            this.archivos.get(sel).cerrar();
-            this.archivos.remove(sel);
+            if (!this.archivos.isEmpty()) {
+                int sel = this.jTabbedPaneCentro.getSelectedIndex();
+                this.jTabbedPaneCentro.remove(sel);
+                this.archivos.get(sel).cerrar();
+                this.archivos.remove(sel);
+            }
         } catch (Exception ex) {
             System.err.println("Error: " + ex.getMessage());
         }
@@ -518,7 +517,7 @@ public class Principal extends javax.swing.JFrame {
     private void jMenuItemCompilarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemCompilarActionPerformed
         int sel = this.jTabbedPaneCentro.getSelectedIndex();
         new MainClass().compile(this.archivos.get(sel).getText(),
-                jTableLexica, jListErrores, jListResultados);
+                jTableLexica, jListErrores, jListResultados, textAreaSintactica);
     }//GEN-LAST:event_jMenuItemCompilarActionPerformed
 
     private void jMenuItemArchivoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemArchivoActionPerformed
@@ -582,7 +581,6 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JList<String> jListIntermedio;
     private javax.swing.JList<String> jListResultados;
     private javax.swing.JList<String> jListSemantico;
-    private javax.swing.JList<String> jListSintactico;
     private javax.swing.JMenu jMenuArchivo;
     private javax.swing.JMenu jMenuCompilar;
     private javax.swing.JMenu jMenuEditar;
@@ -605,16 +603,17 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JPanel jPanelSintactico;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPaneErrores;
     private javax.swing.JScrollPane jScrollPaneIntermedio;
     private javax.swing.JScrollPane jScrollPaneResultados;
     private javax.swing.JScrollPane jScrollPaneSemantico;
-    private javax.swing.JScrollPane jScrollPaneSintactico;
     private javax.swing.JSplitPane jSplitPaneCentro;
     private javax.swing.JTabbedPane jTabbedPaneAbajo;
     private javax.swing.JTabbedPane jTabbedPaneCentro;
     private javax.swing.JTabbedPane jTabbedPaneDerecha;
     private javax.swing.JTable jTableLexica;
     private javax.swing.JTree jTreeDirectorio;
+    private javax.swing.JTextArea textAreaSintactica;
     // End of variables declaration//GEN-END:variables
 }

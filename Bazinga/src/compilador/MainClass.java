@@ -1,5 +1,6 @@
 package compilador;
 
+import apoyo.CustomOutput;
 import compilerTools.Directory;
 import compilerTools.ErrorLSSL;
 import compilerTools.Functions;
@@ -13,11 +14,13 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.JTable;
+import javax.swing.JTextArea;
 import javax.swing.Timer;
 import javax.swing.table.DefaultTableModel;
 
@@ -39,6 +42,7 @@ public class MainClass {
     private ArrayList<Production> identProd;
     private HashMap<String, String> identificadores;
     private boolean codeHasBeenCompiled = false;
+    private PrintStream output;
 
     public MainClass() {
         tokens = new ArrayList<>();
@@ -47,7 +51,8 @@ public class MainClass {
         identificadores = new HashMap();
     }
 
-    public void compile(String codigo, JTable lexica, JList listaErrors, JList Resultados) {
+    public void compile(String codigo, JTable lexica, JList listaErrors, JList Resultados, JTextArea sintactica) {
+        output = new PrintStream(new CustomOutput(sintactica));
         lexicalAnalysis(codigo, lexica);
         syntacticAnalysis(listaErrors, Resultados);
         semanticAnalysis();
@@ -97,7 +102,7 @@ public class MainClass {
         /*Eliminacion de los errores*/
         gramatica.delete(new String[]{"ERROR", "Error_numerico", "Error_identificador"});
 
-        gramatica.group("Valor", "(Numero | Verdadero | Falso)");
+        gramatica.group("Valor", "(float | int | bool)");
         gramatica.group("Valor", "Identificador Menos Identificador");
         gramatica.group("Valor", "Identificador Suma Identificador");
         gramatica.group("Valor", "Identificador Menos Valor");
@@ -108,7 +113,7 @@ public class MainClass {
         gramatica.group("Valor", "Identificador Division Identificador");
 
         gramatica.group("Tipo_dato", "(Float | Int | Boolean)");
-        gramatica.group("Declaracion", "Tipo_dato Identificador (Coma Identificador)? Punto_y_coma");
+        gramatica.group("Declaracion", "Tipo_dato Identificador (Coma Identificador)? Punto_y_coma", identProd);
 
         gramatica.loopForFunExecUntilChangeNotDetected(() -> {
             gramatica.group("Lista_decl", "Declaracion");
@@ -118,19 +123,19 @@ public class MainClass {
 
         gramatica.loopForFunExecUntilChangeNotDetected(() -> {
             gramatica.group("Op_logico", "(IgualIgual | Mayor | Menor | MenorIgual | MayorIgual | Diferente)");
-            gramatica.group("Exp_logica", "Identificador Op_logico Valor");
-            gramatica.group("Exp_logica", "Identificador Op_logico Identificador");
-            gramatica.group("Exp_logica", "Exp_logica (And | Or) Exp_logica");
+            gramatica.group("Exp_logica", "Identificador Op_logico Valor", identProd);
+            gramatica.group("Exp_logica", "Identificador Op_logico Identificador", identProd);
+            gramatica.group("Exp_logica", "Exp_logica (And | Or) Exp_logica", identProd);
         });
 
         gramatica.loopForFunExecUntilChangeNotDetected(() -> {
             //gramatica.group("Suma", "Identificador  (Suma | Resta) Valor");
-            gramatica.group("Sent_asig", "Identificador Igual Valor Punto_y_coma");
+            gramatica.group("Sent_asig", "Identificador Igual Valor Punto_y_coma", identProd);
 
-            gramatica.group("Sent_write", "Write Identificador Punto_y_coma");
-            gramatica.group("Sent_while", "While Abre_parentesis Exp_logica Cierra_parentesis Bloque");
-            gramatica.group("Sent_if", "If Abre_parentesis Exp_logica Cierra_parentesis Then Bloque (Else Bloque)? Fi");
-            gramatica.group("Sent_do", "Do Bloque Until Abre_parentesis Exp_logica Cierra_parentesis Punto_y_coma");
+            gramatica.group("Sent_write", "Write Identificador Punto_y_coma", identProd);
+            gramatica.group("Sent_while", "While Abre_parentesis Exp_logica Cierra_parentesis Bloque", identProd);
+            gramatica.group("Sent_if", "If Abre_parentesis Exp_logica Cierra_parentesis Then Bloque (Else Bloque)? Fi", identProd);
+            gramatica.group("Sent_do", "Do Bloque Until Abre_parentesis Exp_logica Cierra_parentesis Punto_y_coma", identProd);
             gramatica.group("Bloque", "Abre_llave (Lista_sent) Cierra_llave");
 
             gramatica.group("Sentencia", "(Sent_write | Sent_asig | Sent_if | Sent_while | Sent_do)");
@@ -218,7 +223,7 @@ public class MainClass {
         gramatica.group("Sent_if", "If Abre_parentesis Exp_logica Cierra_parentesis Then Bloque (Else Bloque)?", num++,
                 "Error sintactico {}: Falta la palabra reservada fi[#, %]");
         gramatica.group("Sent_do", "Do Bloque Until Abre_parentesis Exp_logica Cierra_parentesis", num++,
-                "Error sintactico {}: Falta el punto y coma [#, %]");   
+                "Error sintactico {}: Falta el punto y coma [#, %]");
         gramatica.group("Bloque", "Abre_llave (Lista_sent)", num++,
                 "Error sintactico {}: Falta el parentesis que cierra [#, %]");
 
@@ -229,6 +234,7 @@ public class MainClass {
         if (sizeErrors > 0) {
             listaR.addElement("Compilacion abortada.");
             listaR.addElement("Revisar panel de errores.");
+            listaR.addElement("Imposible realizar el analisis semantico.");
             Functions.sortErrorsByLineAndColumn(errors);
             for (ErrorLSSL error : errors) {
                 lista.addElement(String.valueOf(error));
@@ -239,10 +245,66 @@ public class MainClass {
         }
         listaErrores.setModel(lista);
         Resultados.setModel(listaR);
+        PrintStream aux = System.out;
+        System.setOut(output);
+        gramatica.show();
+        System.setOut(aux);
     }
 
     private void semanticAnalysis() {
-
+        HashMap<String, String> identDataType = new HashMap<>();
+        identDataType.put("int", "int");
+        identDataType.put("float", "float");
+        identDataType.put("bool", "bool");
+        for (Production id : identProd) {
+            if (id.getName().equals("Declaracion")) {
+                ArrayList<Token> aux = id.getTokens();
+                for (int i = 1; i < aux.size(); i++) {
+                    if (aux.get(i).getLexicalComp().equals("Identificador")) {
+                        if (!identificadores.containsKey(aux.get(i).getLexeme())) {
+                            identificadores.put(aux.get(i).getLexeme(), aux.get(0).getLexicalComp());
+                        }else{
+                            System.err.println("Error: " + aux.get(i).getLexeme() + " declaracion duplicada.");   
+                        }
+                    }
+                }
+            } else if (id.getName().equals("Sent_asig")) {
+                ArrayList<Token> aux = id.getTokens();
+                boolean valido = true;
+                Token error = null;
+                int actualToken = 0;
+                while (actualToken < aux.size()) {
+                    if (aux.get(actualToken).getLexicalComp().matches("Identificador")) {
+                        String tipo = identificadores.get(aux.get(actualToken).getLexeme());
+                        actualToken++;
+                        if (aux.get(actualToken).getLexicalComp().matches("Igual")) {
+                            actualToken++;
+                        }
+                        while (!aux.get(actualToken).getLexeme().matches(";")) {
+                            if (aux.get(actualToken).getLexicalComp().matches("Identificador")) {
+                                String tipo2 = identificadores.get(aux.get(actualToken).getLexeme());
+                                if (!tipo2.matches(tipo)) {
+                                    valido = false;
+                                    error = aux.get(actualToken);
+                                    break;
+                                }
+                                actualToken++;
+                            } else {
+                                actualToken++;
+                            }
+                            System.out.println(aux.get(actualToken).getLexeme());
+                        }
+                    }
+                    if (valido) {
+                        actualToken++;
+                    } else {
+                        break;
+                    }
+                }
+                if (!valido) {
+                    ;
+                }
+            }
+        }
     }
-
 }

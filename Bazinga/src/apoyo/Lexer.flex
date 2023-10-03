@@ -30,16 +30,20 @@ import compilerTools.Token;
     Digito=[0-9]
     Identificador={Letra}({Letra}|{Digito})*
 
-    /*Numero*/
-    Numero = {Digito}{Digito}*(.{Digito}|{Digito})?
+    /*Numeros*/
+    Int = {Digito}{Digito}*
+    Float = {Int}(.{Digito}|{Digito}*)
+
+    /*Logicos*/
+    Bool = ("true" | "false")
 %%
 
     {Comentario}|{EspacioEnBlanco} { /* Ignorar */ }
 
     /* Valores */
-    {Numero} {return token(yytext(), "Numero", yyline, yycolumn);}
-    "true" {return token(yytext(), "Verdadero", yyline, yycolumn);}
-    "false" {return token(yytext(), "Falso", yyline, yycolumn);}
+    {Float} {return token(yytext(), "float", yyline, yycolumn);}
+    {Int} {return token(yytext(), "int", yyline, yycolumn);}
+    {Bool} {return token(yytext(), "bool", yyline, yycolumn);}
 
     /* Operadores de agrupacion */
     "(" {return token(yytext(), "Abre_parentesis", yyline, yycolumn);}
@@ -90,6 +94,7 @@ import compilerTools.Token;
     {Identificador} {return token(yytext(), "Identificador", yyline, yycolumn);}
 
     /* Errores */
-    0{Numero} {return token(yytext(), "Error_numerico", yyline, yycolumn);} //Error de enteros
+    0{Float} {return token(yytext(), "Error_numerico", yyline, yycolumn);} //Error de enteros
+    0{Int} {return token(yytext(), "Error_numerico", yyline, yycolumn);} //Error de enteros
     
     . { return token(yytext(), "ERROR", yyline, yycolumn);}

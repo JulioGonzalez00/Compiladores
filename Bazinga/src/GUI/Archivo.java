@@ -79,7 +79,7 @@ public class Archivo extends javax.swing.JPanel implements ActionListener {
         //textArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
         try {
             AbstractTokenMakerFactory atmf = (AbstractTokenMakerFactory) TokenMakerFactory.getDefaultInstance();
-            atmf.putMapping("text/sCooper","compilador.LexerColor");
+            atmf.putMapping("text/sCooper", "compilador.LexerColor");
             textArea.setSyntaxEditingStyle("text/sCooper");
         } catch (Exception ex) {
             System.err.println("Error: " + ex.getMessage());
@@ -136,7 +136,9 @@ public class Archivo extends javax.swing.JPanel implements ActionListener {
         this.textArea.setText("");
         try {
             ruta = null;
-            fr.close();
+            if (fr != null) {
+                fr.close();
+            }
         } catch (IOException ex2) {
             System.err.println("Error: " + ex2.getMessage());
         }
@@ -148,9 +150,12 @@ public class Archivo extends javax.swing.JPanel implements ActionListener {
             br = new BufferedReader(fr);
             this.textArea.setText("");
             String linea;
+            String texto = "";
             while ((linea = br.readLine()) != null) {
-                this.textArea.append(linea + "\n");
+                texto += linea + "\n";
             }
+            texto = texto.substring(0,texto.lastIndexOf("\n"));
+            textArea.setText(texto);
             ruta = file.getAbsolutePath();
         } catch (IOException ex) {
             JOptionPane.showMessageDialog(this, "Error al abrir el archivo:\n" + ex.getMessage());
