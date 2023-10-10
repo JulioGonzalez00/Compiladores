@@ -79,7 +79,7 @@ public class Archivo extends javax.swing.JPanel implements ActionListener {
         //textArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
         try {
             AbstractTokenMakerFactory atmf = (AbstractTokenMakerFactory) TokenMakerFactory.getDefaultInstance();
-            atmf.putMapping("text/sCooper", "compilador.LexerColor");
+            atmf.putMapping("text/sCooper", "GUI.LexerColor");
             textArea.setSyntaxEditingStyle("text/sCooper");
         } catch (Exception ex) {
             System.err.println("Error: " + ex.getMessage());
