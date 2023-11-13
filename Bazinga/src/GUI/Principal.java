@@ -130,6 +130,9 @@ public class Principal extends javax.swing.JFrame {
         jPanelErrores = new javax.swing.JPanel();
         jScrollPaneErrores = new javax.swing.JScrollPane();
         jListErrores = new javax.swing.JList<>();
+        jPanelSimbolos = new javax.swing.JPanel();
+        jScrollPane5 = new javax.swing.JScrollPane();
+        jTable1 = new javax.swing.JTable();
         Derecha = new javax.swing.JPanel();
         jTabbedPaneDerecha = new javax.swing.JTabbedPane();
         jPanelLexico = new javax.swing.JPanel();
@@ -145,8 +148,8 @@ public class Principal extends javax.swing.JFrame {
         jScrollPaneSemantico = new javax.swing.JScrollPane();
         jListSemantico = new javax.swing.JList<>();
         jPanelIntermedio = new javax.swing.JPanel();
-        jScrollPaneIntermedio = new javax.swing.JScrollPane();
-        jListIntermedio = new javax.swing.JList<>();
+        jScrollPane6 = new javax.swing.JScrollPane();
+        jTextAreaInter = new javax.swing.JTextArea();
         jSplitPaneCentro = new javax.swing.JSplitPane();
         Izquierda = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -219,6 +222,25 @@ public class Principal extends javax.swing.JFrame {
 
         jTabbedPaneAbajo.addTab("Errores", jPanelErrores);
 
+        jPanelSimbolos.setLayout(new java.awt.BorderLayout());
+
+        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null}
+            },
+            new String [] {
+                "Identificador", "Tipo", "Lineas"
+            }
+        ));
+        jScrollPane5.setViewportView(jTable1);
+
+        jPanelSimbolos.add(jScrollPane5, java.awt.BorderLayout.CENTER);
+
+        jTabbedPaneAbajo.addTab("Tabla de simbolos", jPanelSimbolos);
+
         Abajo.add(jTabbedPaneAbajo, java.awt.BorderLayout.CENTER);
 
         Lienzo.add(Abajo, java.awt.BorderLayout.PAGE_END);
@@ -282,14 +304,11 @@ public class Principal extends javax.swing.JFrame {
 
         jPanelIntermedio.setLayout(new java.awt.BorderLayout());
 
-        jListIntermedio.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Intermedio 1", "Intermedio 2", "Intermedio 3", "Intermedio 4", "Intermedio 5", " " };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
-        jScrollPaneIntermedio.setViewportView(jListIntermedio);
+        jTextAreaInter.setColumns(20);
+        jTextAreaInter.setRows(5);
+        jScrollPane6.setViewportView(jTextAreaInter);
 
-        jPanelIntermedio.add(jScrollPaneIntermedio, java.awt.BorderLayout.CENTER);
+        jPanelIntermedio.add(jScrollPane6, java.awt.BorderLayout.CENTER);
 
         jTabbedPaneDerecha.addTab("Codigo Intermedio", jPanelIntermedio);
 
@@ -514,7 +533,7 @@ public class Principal extends javax.swing.JFrame {
     private void jMenuItemCompilarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemCompilarActionPerformed
         int sel = this.jTabbedPaneCentro.getSelectedIndex();
         new MainClass(jTreeArbol).compile(this.archivos.get(sel).getText(),
-                jTableLexica, jListErrores, jListResultados, textAreaSintactica);
+                jTableLexica, jListErrores, jListResultados, textAreaSintactica,jTable1,jTextAreaInter);
     }//GEN-LAST:event_jMenuItemCompilarActionPerformed
 
     private void jMenuItemArchivoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemArchivoActionPerformed
@@ -575,7 +594,6 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JPanel Lienzo;
     private javax.swing.JMenuBar MenuBar;
     private javax.swing.JList<String> jListErrores;
-    private javax.swing.JList<String> jListIntermedio;
     private javax.swing.JList<String> jListResultados;
     private javax.swing.JList<String> jListSemantico;
     private javax.swing.JMenu jMenuArchivo;
@@ -598,20 +616,24 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JPanel jPanelLexico;
     private javax.swing.JPanel jPanelResultados;
     private javax.swing.JPanel jPanelSemantico;
+    private javax.swing.JPanel jPanelSimbolos;
     private javax.swing.JPanel jPanelSintactico;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JScrollPane jScrollPane5;
+    private javax.swing.JScrollPane jScrollPane6;
     private javax.swing.JScrollPane jScrollPaneErrores;
-    private javax.swing.JScrollPane jScrollPaneIntermedio;
     private javax.swing.JScrollPane jScrollPaneResultados;
     private javax.swing.JScrollPane jScrollPaneSemantico;
     private javax.swing.JSplitPane jSplitPaneCentro;
     private javax.swing.JTabbedPane jTabbedPaneAbajo;
     private javax.swing.JTabbedPane jTabbedPaneCentro;
     private javax.swing.JTabbedPane jTabbedPaneDerecha;
+    private javax.swing.JTable jTable1;
     private javax.swing.JTable jTableLexica;
+    private javax.swing.JTextArea jTextAreaInter;
     private javax.swing.JTree jTreeArbol;
     private javax.swing.JTree jTreeDirectorio;
     private javax.swing.JTextArea textAreaSintactica;

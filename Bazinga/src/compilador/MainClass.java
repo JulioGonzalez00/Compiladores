@@ -26,6 +26,7 @@ public class MainClass {
     private final Sintactico sintax;
     private final Lexico lexical = new Lexico();
     private final Semantico semantic = new Semantico();
+    private final Intermedio inter = new Intermedio();
     private ArrayList<Produccion> producciones = new ArrayList();
     private boolean error = false;
 
@@ -34,12 +35,15 @@ public class MainClass {
         tokens = new ArrayList();
     }
 
-    public void compile(String codigo, JTable lexica, JList listaErrors, JList Resultados, JTextArea sintactica) {
+    public void compile(String codigo, JTable lexica, JList listaErrors, JList Resultados, JTextArea sintactica,JTable tabla, JTextArea inter) {
         output = new PrintStream(new CustomOutput(sintactica));
         lexicalAnalysis(codigo, lexica);
         syntacticAnalysis(listaErrors, Resultados, sintactica);
         if (!error) {
-            semanticAnalysis(listaErrors);
+            semanticAnalysis(listaErrors,tabla);
+        }
+        if(!error){
+            interCode(inter);
         }
     }
 
@@ -86,11 +90,15 @@ public class MainClass {
         listaErrores.setModel(modelE);
     }
 
-    private void semanticAnalysis(JList listaE) {
-        semantic.semanticalAnalisys(raiz);
+    private void semanticAnalysis(JList listaE,JTable tabla) {
+        semantic.semanticalAnalisys(raiz,tabla);
         DefaultListModel<String> model = (DefaultListModel)listaE.getModel();
         for(String err: semantic.getErrors()){
             model.addElement(err);
         }
+    }
+    
+    private void interCode(JTextArea interText){
+        interText.setText(inter.generar(raiz));
     }
 }

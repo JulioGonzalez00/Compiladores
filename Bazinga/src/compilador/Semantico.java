@@ -6,6 +6,8 @@ package compilador;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -16,13 +18,14 @@ public class Semantico {
     HashMap<String, Informacion> identificadores = new HashMap();
     ArrayList<String> errores = new ArrayList();
 
-    public void semanticalAnalisys(NodoArbol raiz) {
+    public void semanticalAnalisys(NodoArbol raiz, JTable tabla) {
         analizar(raiz);
         if (!errores.isEmpty()) {
             for (String err : errores) {
                 System.out.println(err);
             }
         }
+        crearTabla(tabla);
     }
 
     public void analizar(NodoArbol nodo) {
@@ -62,7 +65,7 @@ public class Semantico {
                             + " [" + (tok.getFila() + 1) + ", " + tok.getColumna() + "]");
                 } else {
                     identificadores.put(tok.getLexema(),
-                            new Informacion(0, tipo, false));
+                            new Informacion(0, tipo, false, "" + (tok.getFila() + 1)));
                 }
             }
         }
@@ -75,6 +78,7 @@ public class Semantico {
             if (tipo.isEmpty()) {
                 if (revisar(tok.getLexema())) {
                     tipo = identificadores.get(tok.getLexema()).getTipo();
+                    identificadores.get(tok.getLexema()).addLinea("" + (tok.getFila() + 1));
                 } else {
                     errores.add("Error: identificador no declarado "
                             + tok.getLexema() + " [" + (tok.getFila() + 1) + ", "
@@ -101,6 +105,7 @@ public class Semantico {
                         case "Boolean":
                             break;
                         case "Identificador":
+                            identificadores.get(tok.getLexema()).addLinea("" + (tok.getFila() + 1));
                             if (revisar(tok.getLexema())) {
                                 if (tipo.matches("bool")) {
                                     if (!identificadores.get(tok.getLexema()).getTipo().matches("bool")) {
@@ -185,7 +190,6 @@ public class Semantico {
         String tipo = "";
         for (Token tok : aux) {
             if (tipo.isEmpty()) {
-                System.out.println(tok.getClave());
                 switch (tok.getClave()) {
                     case "Identificador" -> {
                         if (revisar(tok.getLexema())) {
@@ -312,6 +316,22 @@ public class Semantico {
             }
         }
         separarExp(expBool);
+    }
+
+    private void crearTabla(JTable tabla) {
+        DefaultTableModel modelo = (DefaultTableModel) tabla.getModel();
+        int a = modelo.getRowCount();
+        for (int i = 0; i < a; i++) {
+            modelo.removeRow(0);
+        }
+        Object[] rowData = new Object[3];
+        identificadores.forEach((k, v) -> {
+            rowData[0] = k;
+            rowData[1] = v.getTipo();
+            rowData[2] = v.getLinea();
+            modelo.addRow(rowData);
+        });
+        tabla.setModel(modelo);
     }
 
 }

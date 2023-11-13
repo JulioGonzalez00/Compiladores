@@ -4,6 +4,8 @@
  */
 package compilador;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author julio
@@ -14,11 +16,13 @@ public class Informacion {
     public boolean error;
     public boolean bool;
     String tipo;
+    ArrayList<String> lineas = new ArrayList();
 
-    public Informacion(float valor, String tipo, boolean bool) {
+    public Informacion(float valor, String tipo, boolean bool, String linea) {
         this.valor = valor;
         this.tipo = tipo;
         this.bool = bool;
+        lineas.add(linea);
     }
 
     public float getValor() {
@@ -53,6 +57,15 @@ public class Informacion {
         this.tipo = tipo;
     }
 
-    
-    
+    public void addLinea(String linea) {
+        this.lineas.add(linea);
+    }
+
+    public String getLinea() {
+        String linea = "";
+        for (String aux : lineas) {
+            linea += aux + ", ";
+        }
+        return linea;
+    }
 }
