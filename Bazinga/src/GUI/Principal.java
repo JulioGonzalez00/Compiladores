@@ -130,9 +130,6 @@ public class Principal extends javax.swing.JFrame {
         jPanelErrores = new javax.swing.JPanel();
         jScrollPaneErrores = new javax.swing.JScrollPane();
         jListErrores = new javax.swing.JList<>();
-        jPanelSimbolos = new javax.swing.JPanel();
-        jScrollPane5 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
         Derecha = new javax.swing.JPanel();
         jTabbedPaneDerecha = new javax.swing.JTabbedPane();
         jPanelLexico = new javax.swing.JPanel();
@@ -145,8 +142,8 @@ public class Principal extends javax.swing.JFrame {
         jScrollPane4 = new javax.swing.JScrollPane();
         jTreeArbol = new javax.swing.JTree();
         jPanelSemantico = new javax.swing.JPanel();
-        jScrollPaneSemantico = new javax.swing.JScrollPane();
-        jListSemantico = new javax.swing.JList<>();
+        jScrollPane5 = new javax.swing.JScrollPane();
+        jTable1 = new javax.swing.JTable();
         jPanelIntermedio = new javax.swing.JPanel();
         jScrollPane6 = new javax.swing.JScrollPane();
         jTextAreaInter = new javax.swing.JTextArea();
@@ -222,25 +219,6 @@ public class Principal extends javax.swing.JFrame {
 
         jTabbedPaneAbajo.addTab("Errores", jPanelErrores);
 
-        jPanelSimbolos.setLayout(new java.awt.BorderLayout());
-
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null}
-            },
-            new String [] {
-                "Identificador", "Tipo", "Lineas"
-            }
-        ));
-        jScrollPane5.setViewportView(jTable1);
-
-        jPanelSimbolos.add(jScrollPane5, java.awt.BorderLayout.CENTER);
-
-        jTabbedPaneAbajo.addTab("Tabla de simbolos", jPanelSimbolos);
-
         Abajo.add(jTabbedPaneAbajo, java.awt.BorderLayout.CENTER);
 
         Lienzo.add(Abajo, java.awt.BorderLayout.PAGE_END);
@@ -291,14 +269,20 @@ public class Principal extends javax.swing.JFrame {
 
         jPanelSemantico.setLayout(new java.awt.BorderLayout());
 
-        jListSemantico.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Semantico 1", "Semantico 2", "Semantico 3", "Semantico 4", " " };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
-        jScrollPaneSemantico.setViewportView(jListSemantico);
+        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null}
+            },
+            new String [] {
+                "Identificador", "Tipo", "Lineas"
+            }
+        ));
+        jScrollPane5.setViewportView(jTable1);
 
-        jPanelSemantico.add(jScrollPaneSemantico, java.awt.BorderLayout.CENTER);
+        jPanelSemantico.add(jScrollPane5, java.awt.BorderLayout.CENTER);
 
         jTabbedPaneDerecha.addTab("Semantico", jPanelSemantico);
 
@@ -595,7 +579,6 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JMenuBar MenuBar;
     private javax.swing.JList<String> jListErrores;
     private javax.swing.JList<String> jListResultados;
-    private javax.swing.JList<String> jListSemantico;
     private javax.swing.JMenu jMenuArchivo;
     private javax.swing.JMenu jMenuCompilar;
     private javax.swing.JMenu jMenuEditar;
@@ -616,7 +599,6 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JPanel jPanelLexico;
     private javax.swing.JPanel jPanelResultados;
     private javax.swing.JPanel jPanelSemantico;
-    private javax.swing.JPanel jPanelSimbolos;
     private javax.swing.JPanel jPanelSintactico;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
@@ -626,7 +608,6 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane6;
     private javax.swing.JScrollPane jScrollPaneErrores;
     private javax.swing.JScrollPane jScrollPaneResultados;
-    private javax.swing.JScrollPane jScrollPaneSemantico;
     private javax.swing.JSplitPane jSplitPaneCentro;
     private javax.swing.JTabbedPane jTabbedPaneAbajo;
     private javax.swing.JTabbedPane jTabbedPaneCentro;

@@ -76,7 +76,7 @@ public class MainClass {
             modelR.addElement("Procediendo con el analisis semantico...");
             modelE.addElement("");
             for (Produccion aux : producciones) {
-                sintactica.append("..................................\n");
+                sintactica.append("......................................................................................................\n");
                 sintactica.append(aux.toString() + "\n");
             }
         } catch (Exception ex) {

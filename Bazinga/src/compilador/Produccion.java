@@ -58,7 +58,7 @@ public class Produccion {
 
     @Override
     public String toString() {
-        StringBuilder ex = new StringBuilder(Nombre + " { ");
+        StringBuilder ex = new StringBuilder(Nombre + "\n{ ");
         for (Token item : Tokens) {
             ex.append(item.toString()).append(" \n");
         }
