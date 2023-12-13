@@ -129,7 +129,7 @@ public class Intermedio {
         boolean band = false;
         for (Token tok : prod.getTokens()) {
             if (tok.getLexema().matches("until")) {
-
+int a;
                 band = true;
             } else if (band) {
                 if (tok.getLexema().matches("\\(")) {
